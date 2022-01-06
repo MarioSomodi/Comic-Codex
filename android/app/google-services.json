@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "257263055183",
+    "project_id": "comic-codex",
+    "storage_bucket": "comic-codex.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:257263055183:android:21c320acd02ebdeaaa953a",
+        "android_client_info": {
+          "package_name": "com.comiccodex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "257263055183-i8nqb1mg1fcdlp4t7a2gkj37lv5r2sg5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.comiccodex",
+            "certificate_hash": "082f500c731131168daa69e3141cd0b1cc5f03e9"
+          }
+        },
+        {
+          "client_id": "257263055183-03v8trt5slbdn3ru8sof9be4thg5alsu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUI7nozYuao9ObAl8i2XYESfOPfzRn-rM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "257263055183-03v8trt5slbdn3ru8sof9be4thg5alsu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
