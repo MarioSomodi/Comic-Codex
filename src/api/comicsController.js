@@ -31,12 +31,18 @@ const formatResultToComic = result => {
   return currentComic;
 };
 
-const getComics = async limit => {
+const getComics = async (limit, offset) => {
+  console.log('comic controller', offset);
   var comics = [];
   if (limit === null) limit = 24;
   var authString = await getApiAuthString();
   const response = await marvelApi.get('comics' + authString, {
-    params: {limit: limit, format: 'comic', formatType: 'comic'},
+    params: {
+      limit: limit,
+      format: 'comic',
+      formatType: 'comic',
+      offset: offset,
+    },
   });
   response.data.data.results.forEach(result => {
     comics.push(formatResultToComic(result));

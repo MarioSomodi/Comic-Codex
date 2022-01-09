@@ -26,7 +26,6 @@ const passwordValidator = password => {
       errorMessage: 'Password has to have atleast one numeric character',
     };
   } else if (!hasLetter(password)) {
-    console.log(password);
     return {
       status: false,
       errorMessage: 'Password has to contain atleast one letter',
@@ -39,8 +38,11 @@ const passwordValidator = password => {
 };
 
 const passwordControlValidator = (password, passwordControl) => {
-  if (password !== passwordControl && passwordValidator(password)) {
-    return {status: false, errorMessage: 'Passwords have to match'};
+  if (password !== passwordControl) {
+    return {
+      status: false,
+      errorMessage: 'Passwords have to match',
+    };
   }
   return {
     status: true,

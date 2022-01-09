@@ -23,8 +23,10 @@ import {
   passwordValidator,
   passwordControlValidator,
 } from '../utilites/validation';
+import useForceUpdate from '../components/useForceUpdate';
 
 export const RegisterScreen = ({navigation}) => {
+  const forceUpdate = useForceUpdate();
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -46,6 +48,7 @@ export const RegisterScreen = ({navigation}) => {
         email: validationResult.errorMessage,
       }));
     }
+    forceUpdate();
     return validationResult.status;
   };
   const validatePassword = () => {
@@ -58,10 +61,14 @@ export const RegisterScreen = ({navigation}) => {
         password: validationResult.errorMessage,
       }));
     }
+    forceUpdate();
     return validationResult.status;
   };
   const validatePasswordControl = () => {
-    var validationResult = passwordControlValidator(formData.password);
+    var validationResult = passwordControlValidator(
+      formData.password,
+      formData.passwordControl,
+    );
     if (validationResult.status) {
       setErrors(prevErrors => getObjWithoutKey(prevErrors, 'passwordControl'));
     } else if (!validationResult.status) {
@@ -70,6 +77,7 @@ export const RegisterScreen = ({navigation}) => {
         passwordControl: validationResult.errorMessage,
       }));
     }
+    forceUpdate();
     return validationResult.status;
   };
 
