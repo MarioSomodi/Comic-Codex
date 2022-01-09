@@ -1,19 +1,22 @@
-import {marvelApi, getApiAuthString} from '../api/apiConfig';
-import Comic from '../models/comic';
+import Comic from '../../models/comic';
+import {marvelApi, getApiAuthString} from '../apiConfig';
 
 const formatResultToComic = result => {
   var textObj = result.textObjects.find(x => x.type === 'issue_solicit_text');
   var description =
     textObj === undefined
-      ? 'There was no description provided for this comic.'
+      ? 'There was no description provided for this Comic.'
       : textObj.text;
   var priceObj = result.prices.find(x => x.type === 'printPrice');
   var printPrice =
     priceObj === undefined
-      ? 'There was no price provided for this comic.'
+      ? 'There was no price provided for this Comic.'
       : priceObj.price;
   var thumbnailUrl =
-    result.thumbnail.path + '/detail.' + result.thumbnail.extension;
+    result.thumbnail.path.includes('image_not_available') ||
+    result.thumbnail.path.includes('4c002e0305708')
+      ? true
+      : result.thumbnail.path + '/detail.' + result.thumbnail.extension;
   var currentComic = new Comic(
     result.id,
     result.characters.available,
@@ -31,8 +34,7 @@ const formatResultToComic = result => {
   return currentComic;
 };
 
-const getComics = async (limit, offset) => {
-  console.log('comic controller', offset);
+const getComicsFromApi = async (limit, offset) => {
   var comics = [];
   if (limit === null) limit = 24;
   var authString = await getApiAuthString();
@@ -50,4 +52,4 @@ const getComics = async (limit, offset) => {
   return comics;
 };
 
-export {getComics};
+export {getComicsFromApi};

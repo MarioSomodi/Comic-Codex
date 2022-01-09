@@ -1,11 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {FlatList, View, Center, Spinner, Heading} from 'native-base';
-import {getComics} from '../api/comicsController';
+import {GetComics} from '../api/controllers/comicsController';
 import {Dimensions} from 'react-native';
 import {isPortrait} from '../utilites/screenOrientation';
-import PureItemView from '../components/PureItemView';
+import PureComicItemView from '../components/PureComicItemView';
 
-const HomeScreen = () => {
+const ComicsScreen = () => {
   const [comics, setComics] = useState([]);
   const [screenOrientation, setScreenOrientation] = useState(null);
   const [offsetAndLoading, setOffsetAndLoad] = useState({
@@ -18,13 +19,12 @@ const HomeScreen = () => {
   });
 
   const fetchComics = async () => {
-    var response = await getComics(24, offsetAndLoading.offsetNum);
+    var response = await GetComics(24, offsetAndLoading.offsetNum);
     setComics(prevComics =>
       offsetAndLoading.offsetNum === 0
         ? response
         : [...prevComics, ...response],
     );
-    console.log(comics);
   };
 
   const handleLoadMoreComics = () => {
@@ -61,7 +61,10 @@ const HomeScreen = () => {
           ListFooterComponent={renderFooter}
           renderItem={({item}) => {
             return (
-              <PureItemView item={item} screenOrientation={screenOrientation} />
+              <PureComicItemView
+                item={item}
+                screenOrientation={screenOrientation}
+              />
             );
           }}
           numColumns={screenOrientation === 'landscape' ? 4 : 3}
@@ -84,4 +87,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default ComicsScreen;

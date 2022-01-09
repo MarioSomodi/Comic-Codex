@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {NativeBaseProvider, extendTheme} from 'native-base';
 import LoginScreen from './src/containers/LoginScreen';
 import RegisterScreen from './src/containers/RegisterScreen';
-
 import AppBar from './src/components/AppBar';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';

@@ -1,7 +1,8 @@
 import React from 'react';
 import {View, PresenceTransition, Image} from 'native-base';
+import placeholderImage from '../assets/images/Placeholder.png';
 
-class PureItemView extends React.PureComponent {
+class PureComicItemView extends React.PureComponent {
   render() {
     const {item, screenOrientation} = this.props;
     return (
@@ -23,7 +24,11 @@ class PureItemView extends React.PureComponent {
             alignItems="center"
             alt={item.title}
             h={screenOrientation === 'landscape' ? 250 : 200}
-            source={{uri: item.thumbnailUrl}}
+            source={
+              item.thumbnailUrl === true
+                ? placeholderImage
+                : {uri: item.thumbnailUrl}
+            }
           />
         </PresenceTransition>
       </View>
@@ -31,4 +36,4 @@ class PureItemView extends React.PureComponent {
   }
 }
 
-export default PureItemView;
+export default PureComicItemView;

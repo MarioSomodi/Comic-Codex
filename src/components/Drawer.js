@@ -5,7 +5,8 @@ import {
 } from '@react-navigation/drawer';
 import {VStack, Box, Text, Divider, Pressable, HStack, Icon} from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import HomeScreen from '../containers/HomeScreen';
+import ComicsScreen from '../containers/ComicsScreen';
+import CharactersScreen from '../containers/CharactersScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -13,6 +14,8 @@ const getIcon = screenName => {
   switch (screenName) {
     case 'Comics':
       return 'menu-book';
+    case 'Characters':
+      return 'person';
     default:
       return undefined;
   }
@@ -80,7 +83,10 @@ const MyDrawer = ({user}) => {
         }}
         drawerContent={props => <CustomDrawerContent {...props} user={user} />}>
         <Drawer.Screen name="Comics">
-          {props => <HomeScreen {...props} user={user} />}
+          {props => <ComicsScreen {...props} user={user} />}
+        </Drawer.Screen>
+        <Drawer.Screen name="Characters">
+          {props => <CharactersScreen {...props} user={user} />}
         </Drawer.Screen>
       </Drawer.Navigator>
     </Box>
