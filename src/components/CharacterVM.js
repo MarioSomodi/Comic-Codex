@@ -1,14 +1,27 @@
 import React from 'react';
-import {View, Text, IconButton, HStack, Image, VStack} from 'native-base';
+import {
+  View,
+  Text,
+  IconButton,
+  Badge,
+  Button,
+  HStack,
+  Image,
+  VStack,
+} from 'native-base';
 import placeholderImage from '../assets/images/Placeholder.png';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const CharacterVM = ({handleCharacterInfoSheetClose, character}) => {
+const CharacterVM = ({
+  handleCharacterInfoSheetClose,
+  character,
+  navigation,
+}) => {
   const getExcerpt = () => {
     var results = character.description.match(/[^\.!\?]+[\.!\?]+/g);
     var excerpt = '';
     results.forEach(sentance => {
-      if (excerpt.length < 200) {
+      if (excerpt.length < 100) {
         excerpt += sentance;
       }
     });
@@ -59,6 +72,62 @@ const CharacterVM = ({handleCharacterInfoSheetClose, character}) => {
           <Text fontSize={13}>{getExcerpt()}</Text>
         </VStack>
       </HStack>
+      <HStack>
+        {character.numOfComics !== 0 ? (
+          <Badge
+            mt={2}
+            mr={1}
+            borderRadius={30}
+            bgColor="red.800"
+            alignSelf="center"
+            variant="solid">
+            <Text color="white" bold={true}>
+              Comics : #{character.numOfComics}
+            </Text>
+          </Badge>
+        ) : null}
+        {character.numOfEvents !== 0 ? (
+          <Badge
+            mt={2}
+            mr={1}
+            borderRadius={30}
+            bgColor="red.800"
+            alignSelf="center"
+            variant="solid">
+            <Text color="white" bold={true}>
+              Events : {character.numOfEvents}
+            </Text>
+          </Badge>
+        ) : null}
+        {character.numOfStories !== 0 ? (
+          <Badge
+            mt={2}
+            borderRadius={30}
+            bgColor="red.800"
+            alignSelf="center"
+            variant="solid">
+            <Text color="white" bold={true}>
+              Stories : {character.numOfStories}
+            </Text>
+          </Badge>
+        ) : null}
+      </HStack>
+      <Button
+        mt={2}
+        onPress={() =>
+          navigation.navigate('CharacterDetails', {character: character})
+        }
+        borderRadius={25}
+        bg="red.800"
+        _pressed={{
+          bg: 'red.900',
+        }}
+        _text={{
+          fontSize: 'md',
+          fontWeight: '500',
+        }}>
+        Character details
+      </Button>
     </View>
   );
 };

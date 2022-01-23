@@ -6,17 +6,18 @@ import {
   IconButton,
   HStack,
   Image,
+  Badge,
   VStack,
 } from 'native-base';
 import placeholderImage from '../assets/images/Placeholder.png';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const ComicVM = ({handleComicInfoSheetClose, comic}) => {
+const ComicVM = ({handleComicInfoSheetClose, comic, navigation}) => {
   const getExcerpt = () => {
     var results = comic.description.match(/[^\.!\?]+[\.!\?]+/g);
     var excerpt = '';
     results.forEach(sentance => {
-      if (excerpt.length < 200) {
+      if (excerpt.length < 100) {
         excerpt += sentance;
       }
     });
@@ -67,8 +68,49 @@ const ComicVM = ({handleComicInfoSheetClose, comic}) => {
           <Text fontSize={13}>{getExcerpt()}</Text>
         </VStack>
       </HStack>
+      <HStack>
+        {comic.issueNumber !== 0 ? (
+          <Badge
+            mt={2}
+            mr={1}
+            borderRadius={30}
+            bgColor="red.800"
+            alignSelf="center"
+            variant="solid">
+            <Text color="white" bold={true}>
+              Issue : #{comic.issueNumber}
+            </Text>
+          </Badge>
+        ) : null}
+        {comic.numOfCharacters !== 0 ? (
+          <Badge
+            mt={2}
+            mr={1}
+            borderRadius={30}
+            bgColor="red.800"
+            alignSelf="center"
+            variant="solid">
+            <Text color="white" bold={true}>
+              Characters : {comic.numOfCharacters}
+            </Text>
+          </Badge>
+        ) : null}
+        {comic.pageCount !== 0 ? (
+          <Badge
+            mt={2}
+            borderRadius={30}
+            bgColor="red.800"
+            alignSelf="center"
+            variant="solid">
+            <Text color="white" bold={true}>
+              Pages : {comic.pageCount}
+            </Text>
+          </Badge>
+        ) : null}
+      </HStack>
       <Button
-        mt={5}
+        mt={2}
+        onPress={() => navigation.navigate('ComicDetails', {comic: comic})}
         borderRadius={25}
         bg="red.800"
         _pressed={{

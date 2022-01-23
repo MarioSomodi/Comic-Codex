@@ -8,7 +8,7 @@ import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import PureCharacterItemView from '../components/PureCharacterItemView';
 import CharacterVM from '../components/CharacterVM';
 
-const CharactersScreen = () => {
+const CharactersScreen = ({navigation}) => {
   const [characters, setCharacters] = useState([]);
   const [currentCharacter, setCurrentCharacter] = useState(null);
   const [screenOrientation, setScreenOrientation] = useState(null);
@@ -119,6 +119,7 @@ const CharactersScreen = () => {
         {currentCharacter && (
           <BottomSheetScrollView>
             <CharacterVM
+              navigation={navigation}
               character={currentCharacter}
               handleCharacterInfoSheetClose={handleCharacterInfoSheetClose}
             />

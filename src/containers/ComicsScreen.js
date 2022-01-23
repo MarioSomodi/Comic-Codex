@@ -1,25 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState, useRef, useMemo, useCallback} from 'react';
-import {
-  FlatList,
-  View,
-  Center,
-  Spinner,
-  Heading,
-  Button,
-  Text,
-} from 'native-base';
+import {FlatList, View, Center, Spinner, Heading} from 'native-base';
 import {GetComics} from '../api/controllers/comicsController';
 import {Dimensions} from 'react-native';
 import {isPortrait} from '../utilites/screenOrientation';
 import PureComicItemView from '../components/PureComicItemView';
-import BottomSheet, {
-  BottomSheetScrollView,
-  BottomSheetFooter,
-} from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import ComicVM from '../components/ComicVM';
 
-const ComicsScreen = () => {
+const ComicsScreen = ({navigation}) => {
   const [comics, setComics] = useState([]);
   const [screenOrientation, setScreenOrientation] = useState(null);
   const [offsetAndLoading, setOffsetAndLoad] = useState({
@@ -131,6 +120,7 @@ const ComicsScreen = () => {
         {currentComic && (
           <BottomSheetScrollView>
             <ComicVM
+              navigation={navigation}
               comic={currentComic}
               handleComicInfoSheetClose={handleComicInfoSheetClose}
             />
