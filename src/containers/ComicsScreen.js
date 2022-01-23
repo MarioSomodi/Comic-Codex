@@ -1,10 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react';
-import {FlatList, View, Center, Spinner, Heading} from 'native-base';
+import React, {useEffect, useState, useRef, useMemo, useCallback} from 'react';
+import {
+  FlatList,
+  View,
+  Center,
+  Spinner,
+  Heading,
+  Button,
+  Text,
+} from 'native-base';
 import {GetComics} from '../api/controllers/comicsController';
 import {Dimensions} from 'react-native';
 import {isPortrait} from '../utilites/screenOrientation';
 import PureComicItemView from '../components/PureComicItemView';
+import BottomSheet, {
+  BottomSheetScrollView,
+  BottomSheetFooter,
+} from '@gorhom/bottom-sheet';
+import ComicVM from '../components/ComicVM';
 
 const ComicsScreen = () => {
   const [comics, setComics] = useState([]);
@@ -13,10 +26,23 @@ const ComicsScreen = () => {
     offsetNum: 0,
     loading: false,
   });
+  const [currentComic, setCurrentComic] = useState(null);
+
+  const bottomSheetRef = useRef(null);
+  const snapPoints = useMemo(() => ['40%'], []);
 
   Dimensions.addEventListener('change', () => {
     setScreenOrientation(isPortrait() ? 'portrait' : 'landscape');
   });
+
+  const handleComicInfoSheetClose = () => {
+    bottomSheetRef.current.close();
+  };
+
+  const handleComicInfoSheetOpen = comic => {
+    bottomSheetRef.current.expand();
+    setCurrentComic(comic);
+  };
 
   const fetchComics = async () => {
     var response = await GetComics(24, offsetAndLoading.offsetNum);
@@ -32,6 +58,26 @@ const ComicsScreen = () => {
       return {offsetNum: prevObj.offsetNum + 24, loading: true};
     });
   };
+
+  const renderItem = useCallback(({item}) => {
+    return (
+      <PureComicItemView
+        handleComicInfoSheetOpen={handleComicInfoSheetOpen}
+        item={item}
+      />
+    );
+  }, []);
+
+  const keyExtractor = useCallback(item => item.id, []);
+
+  const getItemLayout = useCallback(
+    (data, index) => ({
+      length: 200,
+      offset: 200 * index,
+      index,
+    }),
+    [],
+  );
 
   const renderFooter = () => {
     if (!offsetAndLoading.loading) return null;
@@ -54,21 +100,15 @@ const ComicsScreen = () => {
     <View flex={1} justifyContent="center">
       {comics.length > 0 ? (
         <FlatList
+          getItemLayout={getItemLayout}
           onEndReached={handleLoadMoreComics}
           onEndReachedThreshold={0.5}
           m={1}
           data={comics}
           ListFooterComponent={renderFooter}
-          renderItem={({item}) => {
-            return (
-              <PureComicItemView
-                item={item}
-                screenOrientation={screenOrientation}
-              />
-            );
-          }}
-          numColumns={screenOrientation === 'landscape' ? 4 : 3}
-          keyExtractor={item => item.id}
+          renderItem={renderItem}
+          numColumns={screenOrientation === 'landscape' ? 6 : 3}
+          keyExtractor={keyExtractor}
           key={screenOrientation === 'landscape' ? 1 : 2}
         />
       ) : (
@@ -83,6 +123,20 @@ const ComicsScreen = () => {
           </Heading>
         </Center>
       )}
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        handleComponent={null}
+        snapPoints={snapPoints}>
+        {currentComic && (
+          <BottomSheetScrollView>
+            <ComicVM
+              comic={currentComic}
+              handleComicInfoSheetClose={handleComicInfoSheetClose}
+            />
+          </BottomSheetScrollView>
+        )}
+      </BottomSheet>
     </View>
   );
 };

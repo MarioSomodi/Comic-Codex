@@ -111,6 +111,7 @@ export const RegisterScreen = ({navigation}) => {
   return (
     <PresenceTransition
       visible={true}
+      flex={1}
       initial={{
         opacity: 0,
       }}
@@ -121,8 +122,9 @@ export const RegisterScreen = ({navigation}) => {
         },
       }}>
       <ScrollView
+        flex={1}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}>
+        contentContainerStyle={{justifyContent: 'center'}}>
         <Center flex={1}>
           <DismissKeyboard
             children={
@@ -247,6 +249,9 @@ export const RegisterScreen = ({navigation}) => {
                     _text={{
                       fontSize: 'md',
                       fontWeight: '500',
+                    }}
+                    _pressed={{
+                      bg: 'red.900',
                     }}
                     onPress={createNewUser}>
                     Sign up

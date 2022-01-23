@@ -16,7 +16,9 @@ const formatResultToComic = result => {
     result.thumbnail.path.includes('image_not_available') ||
     result.thumbnail.path.includes('4c002e0305708')
       ? true
-      : result.thumbnail.path + '/detail.' + result.thumbnail.extension;
+      : result.thumbnail.path.replace('http', 'https') +
+        '/portrait_incredible.' +
+        result.thumbnail.extension;
   var currentComic = new Comic(
     result.id,
     result.characters.available,
@@ -41,8 +43,8 @@ const getComicsFromApi = async (limit, offset) => {
   const response = await marvelApi.get('comics' + authString, {
     params: {
       limit: limit,
-      format: 'comic',
       formatType: 'comic',
+      orderBy: '-modified',
       offset: offset,
     },
   });

@@ -38,7 +38,7 @@ const getApiAuthString = async () => {
 };
 
 const marvelApi = axios.create({
-  baseURL: 'http://gateway.marvel.com/v1/public/',
+  baseURL: 'https://gateway.marvel.com/v1/public/',
 });
 
 export {getApiAuthString, marvelApi};

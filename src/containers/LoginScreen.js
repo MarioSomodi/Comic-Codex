@@ -95,6 +95,7 @@ export const LoginScreen = ({navigation}) => {
 
   return (
     <PresenceTransition
+      flex={1}
       visible={true}
       initial={{
         opacity: 0,
@@ -106,9 +107,10 @@ export const LoginScreen = ({navigation}) => {
         },
       }}>
       <ScrollView
+        flex={1}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}>
-        <Center flex={1}>
+        contentContainerStyle={{justifyContent: 'center'}}>
+        <Center>
           <DismissKeyboard
             children={
               <Box safeArea w="100%" maxW="400" p={4}>
@@ -214,6 +216,9 @@ export const LoginScreen = ({navigation}) => {
                     _text={{
                       fontSize: 'md',
                       fontWeight: '500',
+                    }}
+                    _pressed={{
+                      bg: 'red.900',
                     }}
                     onPress={loginUser}>
                     Sign in

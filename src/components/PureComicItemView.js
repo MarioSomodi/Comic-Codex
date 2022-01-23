@@ -1,12 +1,16 @@
 import React from 'react';
-import {View, PresenceTransition, Image} from 'native-base';
+import {PresenceTransition, Image, Pressable} from 'native-base';
 import placeholderImage from '../assets/images/Placeholder.png';
 
 class PureComicItemView extends React.PureComponent {
   render() {
-    const {item, screenOrientation} = this.props;
+    const {item, handleComicInfoSheetOpen} = this.props;
     return (
-      <View flex={1} flexDirection="column" m={0.5}>
+      <Pressable
+        onPress={() => handleComicInfoSheetOpen(item)}
+        flex={1}
+        flexDirection="column"
+        m={0.5}>
         <PresenceTransition
           visible={true}
           initial={{
@@ -23,7 +27,7 @@ class PureComicItemView extends React.PureComponent {
             justifyContent="center"
             alignItems="center"
             alt={item.title}
-            h={screenOrientation === 'landscape' ? 250 : 200}
+            h={200}
             source={
               item.thumbnailUrl === true
                 ? placeholderImage
@@ -31,7 +35,7 @@ class PureComicItemView extends React.PureComponent {
             }
           />
         </PresenceTransition>
-      </View>
+      </Pressable>
     );
   }
 }
