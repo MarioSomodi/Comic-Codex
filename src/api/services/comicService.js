@@ -36,18 +36,26 @@ const formatResultToComic = result => {
   return currentComic;
 };
 
-const getComicsFromApi = async (limit, offset) => {
+const getComicsFromApi = async (limit, offset, searchValue) => {
   var comics = [];
-  if (limit === null) limit = 24;
+  if (limit === null) limit = 99;
+  var paramsObj = {
+    limit: limit,
+    formatType: 'comic',
+    orderBy: '-modified',
+    offset: offset,
+  };
+  if (searchValue != null && searchValue.trim().length > 0) {
+    paramsObj.titleStartsWith = searchValue;
+  }
   var authString = await getApiAuthString();
   const response = await marvelApi.get('comics' + authString, {
-    params: {
-      limit: limit,
-      formatType: 'comic',
-      orderBy: '-modified',
-      offset: offset,
-    },
+    params: paramsObj,
   });
+  if (response.data.data.count == 0) {
+    comics.push('false');
+    return comics;
+  }
   response.data.data.results.forEach(result => {
     comics.push(formatResultToComic(result));
   });

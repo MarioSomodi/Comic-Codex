@@ -26,17 +26,25 @@ const formatResultToCharacter = result => {
   return currentCharacter;
 };
 
-const getCharactersFromApi = async (limit, offset) => {
+const getCharactersFromApi = async (limit, offset, searchValue) => {
   var characters = [];
-  if (limit === null) limit = 24;
+  if (limit === null) limit = 99;
+  var paramsObj = {
+    limit: limit,
+    orderBy: '-modified',
+    offset: offset,
+  };
+  if (searchValue != null && searchValue.trim().length > 0) {
+    paramsObj.nameStartsWith = searchValue;
+  }
   var authString = await getApiAuthString();
   const response = await marvelApi.get('characters' + authString, {
-    params: {
-      limit: limit,
-      orderBy: '-modified',
-      offset: offset,
-    },
+    params: paramsObj,
   });
+  if (response.data.data.count == 0) {
+    characters.push('false');
+    return characters;
+  }
   response.data.data.results.forEach(result => {
     characters.push(formatResultToCharacter(result));
   });

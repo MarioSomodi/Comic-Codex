@@ -20,6 +20,7 @@
     "axios": "^0.24.0",
     "crypto-js": "^4.1.1",
     "jetifier": "^2.0.0",
+    "lodash.debounce": "^4.0.8",
     "native-base": "3.2.1",
     "react": "17.0.1",
     "react-native": "0.64.2",
