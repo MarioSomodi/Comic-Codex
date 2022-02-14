@@ -81,4 +81,8 @@ const getCharactersComicsFromApi = async (limit, offset, id) => {
   return charactersComics;
 };
 
-export {getCharactersFromApi, getCharactersComicsFromApi};
+export {
+  getCharactersFromApi,
+  getCharactersComicsFromApi,
+  formatResultToCharacter,
+};

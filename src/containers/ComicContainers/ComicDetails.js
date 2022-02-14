@@ -7,10 +7,11 @@ import {
   Divider,
   VStack,
   ScrollView,
+  Button,
 } from 'native-base';
 import placeholderImage from '../../assets/images/Placeholder.png';
 
-const ComicDetails = ({route}) => {
+const ComicDetails = ({route, navigation}) => {
   const {comic} = route.params;
   return (
     <ScrollView p={2}>
@@ -95,6 +96,95 @@ const ComicDetails = ({route}) => {
           {comic.description}
         </Text>
         <Divider mt={3} h={1} borderRadius={50} backgroundColor="red.800" />
+        <VStack>
+          {comic.numOfCharacters !== 0 ? (
+            <Button
+              mt={2}
+              borderRadius={25}
+              bg="red.800"
+              _text={{
+                fontSize: 'md',
+                fontWeight: '500',
+              }}
+              _pressed={{
+                bg: 'red.900',
+              }}
+              onPress={() =>
+                navigation.navigate('Root', {
+                  screen: 'Characters',
+                  params: {id: comic.id, title: comic.title},
+                })
+              }>
+              Check out comics characters
+            </Button>
+          ) : null}
+          {comic.numOfCreators !== 0 ? (
+            <Button
+              mt={2}
+              borderRadius={25}
+              bg="red.800"
+              _text={{
+                fontSize: 'md',
+                fontWeight: '500',
+              }}
+              _pressed={{
+                bg: 'red.900',
+              }}
+              // onPress={() =>
+              //   navigation.navigate('Root', {
+              //     screen: 'Characters',
+              //     params: {id: comic.id, title: comic.title},
+              //   })
+              // }
+            >
+              Check out comics creators
+            </Button>
+          ) : null}
+          {comic.numOfEvents !== 0 ? (
+            <Button
+              mt={2}
+              borderRadius={25}
+              bg="red.800"
+              _text={{
+                fontSize: 'md',
+                fontWeight: '500',
+              }}
+              _pressed={{
+                bg: 'red.900',
+              }}
+              // onPress={() =>
+              //   navigation.navigate('Root', {
+              //     screen: 'Characters',
+              //     params: {id: comic.id, title: comic.title},
+              //   })
+              // }
+            >
+              Check out comics events
+            </Button>
+          ) : null}
+          {comic.numOfStories !== 0 ? (
+            <Button
+              mt={2}
+              borderRadius={25}
+              bg="red.800"
+              _text={{
+                fontSize: 'md',
+                fontWeight: '500',
+              }}
+              _pressed={{
+                bg: 'red.900',
+              }}
+              // onPress={() =>
+              //   navigation.navigate('Root', {
+              //     screen: 'Characters',
+              //     params: {id: comic.id, title: comic.title},
+              //   })
+              // }
+            >
+              Check out comics stories
+            </Button>
+          ) : null}
+        </VStack>
       </VStack>
     </ScrollView>
   );

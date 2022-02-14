@@ -173,7 +173,7 @@ const ComicsOfCharactersList = ({
         <Center flex={1}>
           <View>
             <Spinner
-              accessibilityLabel="Loading comics"
+              accessibilityLabel="Loading characters comics"
               color="red.800"
               size="lg"
             />

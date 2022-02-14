@@ -1,5 +1,6 @@
 import Comic from '../../models/comic';
 import {marvelApi, getApiAuthString} from '../apiConfig';
+import {formatResultToCharacter} from '../services/charactersService';
 
 const formatResultToComic = result => {
   var textObj = result.textObjects.find(x => x.type === 'issue_solicit_text');
@@ -64,4 +65,31 @@ const getComicsFromApi = async (limit, offset, searchValue) => {
   return comics;
 };
 
-export {getComicsFromApi, formatResultToComic};
+const getComicsCharactersFromApi = async (limit, offset, id) => {
+  var comicsCharacters = [];
+  if (limit === null) {
+    limit = 99;
+  }
+  var paramsObj = {
+    limit: limit,
+    orderBy: '-modified',
+    offset: offset,
+  };
+  var authString = await getApiAuthString();
+  const response = await marvelApi.get(
+    'comics/' + id + '/characters' + authString,
+    {
+      params: paramsObj,
+    },
+  );
+  if (response.data.data.count === 0) {
+    comicsCharacters.push('false');
+    return comicsCharacters;
+  }
+  response.data.data.results.forEach(result => {
+    comicsCharacters.push(formatResultToCharacter(result));
+  });
+  return comicsCharacters;
+};
+
+export {getComicsFromApi, formatResultToComic, getComicsCharactersFromApi};
