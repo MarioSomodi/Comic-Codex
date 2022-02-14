@@ -16,10 +16,10 @@ import {
   PresenceTransition,
 } from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import DismissKeyboard from '../components/DismissKeyboard';
 import auth from '@react-native-firebase/auth';
-import {emailValidator, passwordValidator} from '../utilites/validation';
-import useForceUpdate from '../components/useForceUpdate';
+import DismissKeyboard from '../../components/DismissKeyboard';
+import {emailValidator, passwordValidator} from '../../utilites/validation';
+import useForceUpdate from '../../components/useForceUpdate';
 
 export const LoginScreen = ({navigation}) => {
   const forceUpdate = useForceUpdate();
@@ -63,14 +63,12 @@ export const LoginScreen = ({navigation}) => {
   };
 
   const validate = () => {
-    console.log('called');
     var passwordResult = validatePassword();
     var emailResult = validateEmail();
     if (passwordResult && emailResult) {
       setErrors({});
       return true;
     }
-    console.log(errors);
     return false;
   };
 

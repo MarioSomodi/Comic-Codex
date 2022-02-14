@@ -1,6 +1,6 @@
 import React from 'react';
 import {PresenceTransition, Image, Pressable} from 'native-base';
-import placeholderImage from '../assets/images/Placeholder.png';
+import placeholderImage from '../../assets/images/Placeholder.png';
 
 class PureCharacterItemView extends React.PureComponent {
   render() {
@@ -9,6 +9,7 @@ class PureCharacterItemView extends React.PureComponent {
       <Pressable
         onPress={() => handleCharacterInfoSheetOpen(item)}
         flex={1}
+        maxW="33%"
         flexDirection="column"
         m={0.5}>
         <PresenceTransition

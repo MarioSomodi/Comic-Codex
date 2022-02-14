@@ -9,8 +9,8 @@ import {
   Image,
   VStack,
 } from 'native-base';
-import placeholderImage from '../assets/images/Placeholder.png';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import placeholderImage from '../../assets/images/Placeholder.png';
 
 const CharacterVM = ({
   handleCharacterInfoSheetClose,

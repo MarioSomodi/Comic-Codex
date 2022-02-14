@@ -1,5 +1,6 @@
 import {marvelApi, getApiAuthString} from '../apiConfig';
 import Character from '../../models/character';
+import {formatResultToComic} from '../services/comicService';
 
 const formatResultToCharacter = result => {
   var description =
@@ -28,7 +29,9 @@ const formatResultToCharacter = result => {
 
 const getCharactersFromApi = async (limit, offset, searchValue) => {
   var characters = [];
-  if (limit === null) limit = 99;
+  if (limit === null) {
+    limit = 99;
+  }
   var paramsObj = {
     limit: limit,
     orderBy: '-modified',
@@ -41,7 +44,7 @@ const getCharactersFromApi = async (limit, offset, searchValue) => {
   const response = await marvelApi.get('characters' + authString, {
     params: paramsObj,
   });
-  if (response.data.data.count == 0) {
+  if (response.data.data.count === 0) {
     characters.push('false');
     return characters;
   }
@@ -51,4 +54,31 @@ const getCharactersFromApi = async (limit, offset, searchValue) => {
   return characters;
 };
 
-export {getCharactersFromApi};
+const getCharactersComicsFromApi = async (limit, offset, id) => {
+  var charactersComics = [];
+  if (limit === null) {
+    limit = 99;
+  }
+  var paramsObj = {
+    limit: limit,
+    orderBy: '-modified',
+    offset: offset,
+  };
+  var authString = await getApiAuthString();
+  const response = await marvelApi.get(
+    'characters/' + id + '/comics' + authString,
+    {
+      params: paramsObj,
+    },
+  );
+  if (response.data.data.count === 0) {
+    charactersComics.push('false');
+    return charactersComics;
+  }
+  response.data.data.results.forEach(result => {
+    charactersComics.push(formatResultToComic(result));
+  });
+  return charactersComics;
+};
+
+export {getCharactersFromApi, getCharactersComicsFromApi};

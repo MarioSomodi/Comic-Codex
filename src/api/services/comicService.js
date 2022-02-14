@@ -38,7 +38,9 @@ const formatResultToComic = result => {
 
 const getComicsFromApi = async (limit, offset, searchValue) => {
   var comics = [];
-  if (limit === null) limit = 99;
+  if (limit === null) {
+    limit = 99;
+  }
   var paramsObj = {
     limit: limit,
     formatType: 'comic',
@@ -52,7 +54,7 @@ const getComicsFromApi = async (limit, offset, searchValue) => {
   const response = await marvelApi.get('comics' + authString, {
     params: paramsObj,
   });
-  if (response.data.data.count == 0) {
+  if (response.data.data.count === 0) {
     comics.push('false');
     return comics;
   }
@@ -62,4 +64,4 @@ const getComicsFromApi = async (limit, offset, searchValue) => {
   return comics;
 };
 
-export {getComicsFromApi};
+export {getComicsFromApi, formatResultToComic};

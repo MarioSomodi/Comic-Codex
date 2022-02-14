@@ -9,18 +9,22 @@ import {
   Badge,
   VStack,
 } from 'native-base';
-import placeholderImage from '../assets/images/Placeholder.png';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import placeholderImage from '../../assets/images/Placeholder.png';
 
 const ComicVM = ({handleComicInfoSheetClose, comic, navigation}) => {
   const getExcerpt = () => {
     var results = comic.description.match(/[^\.!\?]+[\.!\?]+/g);
     var excerpt = '';
-    results.forEach(sentance => {
-      if (excerpt.length < 100) {
-        excerpt += sentance;
-      }
-    });
+    if (results !== null) {
+      results.forEach(sentance => {
+        if (excerpt.length < 100) {
+          excerpt += sentance;
+        }
+      });
+    } else {
+      excerpt = comic.description;
+    }
     return excerpt;
   };
   return (

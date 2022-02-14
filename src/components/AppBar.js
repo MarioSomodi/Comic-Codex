@@ -1,10 +1,12 @@
 import React from 'react';
 import {View, HStack, Text, Box, StatusBar, Icon} from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import * as RootNavigation from './RootNavigation';
+import {useNavigationState} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
+import * as RootNavigation from './RootNavigation';
 
 function AppBar({user}) {
+  const stateIndex = useNavigationState(state => state.index);
   const signOutUser = () => {
     auth()
       .signOut()
@@ -19,13 +21,25 @@ function AppBar({user}) {
         justifyContent={user ? 'space-between' : 'center'}
         alignItems="center">
         {user && (
-          <Icon
-            as={<MaterialIcons name="menu" />}
-            size="6"
-            ml={3}
-            color="white"
-            onPress={() => RootNavigation.toggleDrawer()}
-          />
+          <>
+            {stateIndex === 0 ? (
+              <Icon
+                as={<MaterialIcons name="menu" />}
+                size="6"
+                ml={3}
+                color="white"
+                onPress={() => RootNavigation.toggleDrawer()}
+              />
+            ) : (
+              <Icon
+                as={<MaterialIcons name="keyboard-backspace" />}
+                size="6"
+                ml={3}
+                color="white"
+                onPress={() => RootNavigation.Back()}
+              />
+            )}
+          </>
         )}
         <HStack>
           <Text color="white" fontSize="40" fontWeight="600" fontFamily="comic">

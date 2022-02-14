@@ -16,14 +16,14 @@ import {
   PresenceTransition,
 } from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import DismissKeyboard from '../components/DismissKeyboard';
 import auth from '@react-native-firebase/auth';
+import DismissKeyboard from '../../components/DismissKeyboard';
 import {
   emailValidator,
   passwordValidator,
   passwordControlValidator,
-} from '../utilites/validation';
-import useForceUpdate from '../components/useForceUpdate';
+} from '../../utilites/validation';
+import useForceUpdate from '../../components/useForceUpdate';
 
 export const RegisterScreen = ({navigation}) => {
   const forceUpdate = useForceUpdate();
@@ -90,7 +90,6 @@ export const RegisterScreen = ({navigation}) => {
       setErrors({});
       return true;
     }
-    console.log(errors);
     return false;
   };
 

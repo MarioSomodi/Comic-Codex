@@ -5,10 +5,8 @@ import {
 } from '@react-navigation/drawer';
 import {VStack, Box, Text, Divider, Pressable, HStack, Icon} from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import ComicsScreen from '../containers/ComicsScreen';
-import CharactersScreen from '../containers/CharactersScreen';
-import ComicDetails from '../containers/ComicDetails';
-import CharacterDetails from '../containers/CharacterDetails';
+import ComicsScreen from '../containers/ComicContainers/ComicsScreen';
+import CharactersScreen from '../containers/CharacterContainers/CharactersScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -37,51 +35,38 @@ const CustomDrawerContent = props => {
         </Box>
         <VStack divider={<Divider />} space="4">
           <VStack space="3">
-            {props.state.routeNames.map((name, index) => {
-              if (
-                index <
-                props.state.routeNames.findIndex(x => x == 'ComicDetails')
-              ) {
-                return (
-                  <Pressable
-                    key={index}
-                    px="5"
-                    py="3"
-                    rounded="md"
-                    bg={
-                      index === props.state.index
-                        ? 'rgba(6, 182, 212, 0.1)'
-                        : 'transparent'
+            {props.state.routeNames.map((name, index) => (
+              <Pressable
+                key={index}
+                px="5"
+                py="3"
+                rounded="md"
+                bg={
+                  index === props.state.index
+                    ? 'rgba(6, 182, 212, 0.1)'
+                    : 'transparent'
+                }
+                onPress={event => {
+                  props.navigation.navigate(name);
+                }}>
+                <HStack space="7" alignItems="center">
+                  <Icon
+                    color={
+                      index === props.state.index ? 'primary.500' : 'gray.500'
                     }
-                    onPress={event => {
-                      props.navigation.navigate(name);
-                    }}>
-                    <HStack space="7" alignItems="center">
-                      <Icon
-                        color={
-                          index === props.state.index
-                            ? 'primary.500'
-                            : 'gray.500'
-                        }
-                        size="5"
-                        as={<MaterialIcons name={getIcon(name)} />}
-                      />
-                      <Text
-                        fontWeight="500"
-                        color={
-                          index === props.state.index
-                            ? 'primary.500'
-                            : 'gray.700'
-                        }>
-                        {name}
-                      </Text>
-                    </HStack>
-                  </Pressable>
-                );
-              } else {
-                return null;
-              }
-            })}
+                    size="5"
+                    as={<MaterialIcons name={getIcon(name)} />}
+                  />
+                  <Text
+                    fontWeight="500"
+                    color={
+                      index === props.state.index ? 'primary.500' : 'gray.700'
+                    }>
+                    {name}
+                  </Text>
+                </HStack>
+              </Pressable>
+            ))}
           </VStack>
         </VStack>
       </VStack>
@@ -102,12 +87,6 @@ const MyDrawer = ({user}) => {
         </Drawer.Screen>
         <Drawer.Screen name="Characters">
           {props => <CharactersScreen {...props} user={user} />}
-        </Drawer.Screen>
-        <Drawer.Screen name="ComicDetails">
-          {props => <ComicDetails {...props} user={user} />}
-        </Drawer.Screen>
-        <Drawer.Screen name="CharacterDetails">
-          {props => <CharacterDetails {...props} user={user} />}
         </Drawer.Screen>
       </Drawer.Navigator>
     </Box>
