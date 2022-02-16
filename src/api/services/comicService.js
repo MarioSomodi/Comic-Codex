@@ -1,4 +1,5 @@
 import Comic from '../../models/comic';
+import Creator from '../../models/creator';
 import {marvelApi, getApiAuthString} from '../apiConfig';
 import {formatResultToCharacter} from '../services/charactersService';
 
@@ -6,7 +7,9 @@ const formatResultToComic = result => {
   var textObj = result.textObjects.find(x => x.type === 'issue_solicit_text');
   var description =
     textObj === undefined
-      ? 'There was no description provided for this Comic.'
+      ? result.description != null
+        ? result.description
+        : 'There was no description provided for this Comic.'
       : textObj.text;
   var priceObj = result.prices.find(x => x.type === 'printPrice');
   var printPrice =
@@ -33,7 +36,25 @@ const formatResultToComic = result => {
     printPrice,
     result.series.name,
     result.stories.available,
+    result.format,
   );
+  if (result.series != null) {
+    var parts = result.series.resourceURI.split('/');
+    currentComic.seriesId = parts[parts.length - 1];
+  }
+  if (result.creators.available > 0) {
+    var creatorsOfComic = [];
+    result.creators.items.forEach(creator => {
+      var parts = creator.resourceURI.split('/');
+      var creatorObj = new Creator(
+        parts[parts.length - 1],
+        creator.name,
+        creator.role,
+      );
+      creatorsOfComic.push(creatorObj);
+    });
+    currentComic.creators = creatorsOfComic;
+  }
   return currentComic;
 };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
   View,
   HStack,
@@ -7,15 +8,17 @@ import {
   Divider,
   VStack,
   ScrollView,
-  Button,
+  Icon,
+  IconButton,
 } from 'native-base';
 import placeholderImage from '../../assets/images/Placeholder.png';
+import PureCreatorItemView from '../../components/CreatorComponents/PureCreatorItemView';
 
 const ComicDetails = ({route, navigation}) => {
   const {comic} = route.params;
   return (
     <ScrollView p={2}>
-      <VStack>
+      <VStack mb={10}>
         <HStack justifyContent="center" alignItems="center">
           <Image
             alignSelf="center"
@@ -46,6 +49,17 @@ const ComicDetails = ({route, navigation}) => {
               {comic.title}
             </Text>
             <Divider h={0.5} borderRadius={50} backgroundColor="red.800" />
+            {comic.format != null ? (
+              <View>
+                <Text m={1} fontSize={17}>
+                  <Text fontSize={18} bold={true}>
+                    Format
+                  </Text>
+                  : {comic.format}
+                </Text>
+                <Divider h={0.5} borderRadius={50} backgroundColor="red.800" />
+              </View>
+            ) : null}
             {comic.seriesName != null ? (
               <View>
                 <Text m={1} fontSize={17}>
@@ -92,99 +106,168 @@ const ComicDetails = ({route, navigation}) => {
             ) : null}
           </VStack>
         </HStack>
+
         <Text m={1} mt={3} fontSize={15}>
           {comic.description}
         </Text>
-        <Divider mt={3} h={1} borderRadius={50} backgroundColor="red.800" />
-        <VStack>
-          {comic.numOfCharacters !== 0 ? (
-            <Button
-              mt={2}
-              borderRadius={25}
-              bg="red.800"
-              _text={{
-                fontSize: 'md',
-                fontWeight: '500',
-              }}
-              _pressed={{
-                bg: 'red.900',
-              }}
-              onPress={() =>
-                navigation.navigate('Root', {
-                  screen: 'Characters',
-                  params: {id: comic.id, title: comic.title},
-                })
-              }>
-              Check out comics characters
-            </Button>
-          ) : null}
-          {comic.numOfCreators !== 0 ? (
-            <Button
-              mt={2}
-              borderRadius={25}
-              bg="red.800"
-              _text={{
-                fontSize: 'md',
-                fontWeight: '500',
-              }}
-              _pressed={{
-                bg: 'red.900',
-              }}
-              // onPress={() =>
-              //   navigation.navigate('Root', {
-              //     screen: 'Characters',
-              //     params: {id: comic.id, title: comic.title},
-              //   })
-              // }
-            >
-              Check out comics creators
-            </Button>
-          ) : null}
-          {comic.numOfEvents !== 0 ? (
-            <Button
-              mt={2}
-              borderRadius={25}
-              bg="red.800"
-              _text={{
-                fontSize: 'md',
-                fontWeight: '500',
-              }}
-              _pressed={{
-                bg: 'red.900',
-              }}
-              // onPress={() =>
-              //   navigation.navigate('Root', {
-              //     screen: 'Characters',
-              //     params: {id: comic.id, title: comic.title},
-              //   })
-              // }
-            >
-              Check out comics events
-            </Button>
-          ) : null}
-          {comic.numOfStories !== 0 ? (
-            <Button
-              mt={2}
-              borderRadius={25}
-              bg="red.800"
-              _text={{
-                fontSize: 'md',
-                fontWeight: '500',
-              }}
-              _pressed={{
-                bg: 'red.900',
-              }}
-              // onPress={() =>
-              //   navigation.navigate('Root', {
-              //     screen: 'Characters',
-              //     params: {id: comic.id, title: comic.title},
-              //   })
-              // }
-            >
-              Check out comics stories
-            </Button>
-          ) : null}
-        </VStack>
+
+        {comic.numOfCharacters !== 0 ||
+        comic.numOfEvents !== 0 ||
+        comic.numOfStories !== 0 ||
+        comic.seriesId !== null ? (
+          <View>
+            <Divider mt={3} h={1} borderRadius={50} backgroundColor="red.800" />
+            <HStack justifyContent="center" alignItems="center">
+              {comic.numOfCharacters !== 0 ? (
+                <VStack mx={2}>
+                  <IconButton
+                    alignSelf="center"
+                    mt={3}
+                    variant="solid"
+                    backgroundColor="red.800"
+                    borderRadius="full"
+                    size="lg"
+                    onPress={() =>
+                      navigation.navigate('Root', {
+                        screen: 'Characters',
+                        params: {id: comic.id, title: comic.title},
+                      })
+                    }
+                    icon={
+                      <Icon
+                        color="white"
+                        as={MaterialIcons}
+                        name="person"
+                        size="sm"
+                      />
+                    }
+                  />
+                  <Text textAlign="center" fontSize={14}>
+                    Characters
+                  </Text>
+                </VStack>
+              ) : null}
+              {comic.seriesId !== null ? (
+                <VStack mx={2}>
+                  <IconButton
+                    alignSelf="center"
+                    mt={3}
+                    variant="solid"
+                    backgroundColor="red.800"
+                    borderRadius="full"
+                    size="lg"
+                    // onPress={() =>
+                    //   navigation.navigate('Root', {
+                    //     screen: 'Characters',
+                    //     params: {id: comic.id, title: comic.title},
+                    //   })
+                    // }
+                    icon={
+                      <Icon
+                        color="white"
+                        as={MaterialIcons}
+                        name="collections-bookmark"
+                        size="sm"
+                      />
+                    }
+                  />
+                  <Text textAlign="center" fontSize={14}>
+                    Series
+                  </Text>
+                </VStack>
+              ) : null}
+              {comic.numOfEvents !== 0 ? (
+                <VStack mx={2}>
+                  <IconButton
+                    alignSelf="center"
+                    mt={3}
+                    variant="solid"
+                    backgroundColor="red.800"
+                    borderRadius="full"
+                    size="lg"
+                    // onPress={() =>
+                    //   navigation.navigate('Root', {
+                    //     screen: 'Characters',
+                    //     params: {id: comic.id, title: comic.title},
+                    //   })
+                    // }
+                    icon={
+                      <Icon
+                        color="white"
+                        as={MaterialIcons}
+                        name="event"
+                        size="sm"
+                      />
+                    }
+                  />
+                  <Text textAlign="center" fontSize={14}>
+                    Events
+                  </Text>
+                </VStack>
+              ) : null}
+              {comic.numOfStories !== 0 ? (
+                <VStack mx={2}>
+                  <IconButton
+                    alignSelf="center"
+                    mt={3}
+                    variant="solid"
+                    backgroundColor="red.800"
+                    borderRadius="full"
+                    size="lg"
+                    // onPress={() =>
+                    //   navigation.navigate('Root', {
+                    //     screen: 'Characters',
+                    //     params: {id: comic.id, title: comic.title},
+                    //   })
+                    // }
+                    icon={
+                      <Icon
+                        color="white"
+                        as={MaterialIcons}
+                        name="library-books"
+                        size="sm"
+                      />
+                    }
+                  />
+                  <Text textAlign="center" fontSize={14}>
+                    Stories
+                  </Text>
+                </VStack>
+              ) : null}
+            </HStack>
+            <Text textAlign="center" mt={2} fontSize={11}>
+              <Text mb={-2} fontSize={11} bold={true}>
+                Hint:
+              </Text>{' '}
+              pressing the buttons above will bring up this comics specified
+              item/s.
+            </Text>
+          </View>
+        ) : null}
+        {comic.creators.length > 0 ? (
+          <View>
+            <Divider mt={3} h={1} borderRadius={50} backgroundColor="red.800" />
+            <VStack m={1} mt={3}>
+              <Text
+                textAlign="center"
+                mb={3}
+                key={-1}
+                bold={true}
+                fontSize={18}>
+                Creators
+              </Text>
+              {comic.creators.map((creator, index) => {
+                return (
+                  <PureCreatorItemView
+                    key={index}
+                    navigation={navigation}
+                    item={creator}
+                  />
+                );
+              })}
+            </VStack>
+          </View>
+        ) : null}
       </VStack>
     </ScrollView>
   );

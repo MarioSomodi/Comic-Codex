@@ -12,11 +12,15 @@ export default class Comic {
     printPrice,
     seriesName,
     numOfStories,
+    format,
+    seriesId,
+    creators,
   ) {
     this.id = id;
     this.numOfCharacters = numOfCharacters;
     this.numOfCreators = numOfCreators;
     this.title = title;
+    this.format = format;
     this.description = description;
     this.numOfEvents = numOfEvents;
     this.thumbnailUrl = thumbnailUrl;
@@ -25,5 +29,7 @@ export default class Comic {
     this.printPrice = printPrice;
     this.seriesName = seriesName;
     this.numOfStories = numOfStories;
+    this.seriesId = seriesId;
+    this.creators = creators;
   }
 }

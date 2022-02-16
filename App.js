@@ -10,6 +10,7 @@ import MyDrawer from './src/components/Drawer';
 import {navigationRef} from './src/components/RootNavigation';
 import ComicDetails from './src/containers/ComicContainers/ComicDetails';
 import CharacterDetails from './src/containers/CharacterContainers/CharacterDetails';
+import CreatorDetails from './src/containers/CreatorContainers/CreatorDetails';
 
 const theme = extendTheme({
   fontConfig: {
@@ -77,6 +78,14 @@ const App = () => {
                 <>
                   <AppBar {...props} user={user} />
                   <CharacterDetails {...props} user={user} />
+                </>
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="CreatorDetails" options={{unmountOnBlur: true}}>
+              {props => (
+                <>
+                  <AppBar {...props} user={user} />
+                  <CreatorDetails {...props} user={user} />
                 </>
               )}
             </Stack.Screen>
