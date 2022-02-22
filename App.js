@@ -63,7 +63,7 @@ const App = () => {
                 </>
               )}
             </Stack.Screen>
-            <Stack.Screen name="ComicDetails" options={{unmountOnBlur: true}}>
+            <Stack.Screen name="ComicDetails">
               {props => (
                 <>
                   <AppBar {...props} user={user} />
@@ -71,9 +71,7 @@ const App = () => {
                 </>
               )}
             </Stack.Screen>
-            <Stack.Screen
-              name="CharacterDetails"
-              options={{unmountOnBlur: true}}>
+            <Stack.Screen name="CharacterDetails">
               {props => (
                 <>
                   <AppBar {...props} user={user} />
@@ -81,7 +79,7 @@ const App = () => {
                 </>
               )}
             </Stack.Screen>
-            <Stack.Screen name="CreatorDetails" options={{unmountOnBlur: true}}>
+            <Stack.Screen name="CreatorDetails">
               {props => (
                 <>
                   <AppBar {...props} user={user} />

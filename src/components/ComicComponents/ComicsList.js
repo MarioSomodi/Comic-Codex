@@ -6,7 +6,7 @@ import {isPortrait} from '../../utilites/screenOrientation';
 import PureComicItemView from './PureComicItemView';
 import {GetComics} from '../../api/controllers/comicsController';
 
-const ComicsList = ({handleComicInfoSheetOpen}) => {
+const ComicsList = ({handleComicInfoSheetOpen, navigation}) => {
   const [comics, setComics] = useState([]);
   const [screenOrientation, setScreenOrientation] = useState(null);
   const [offsetAndLoading, setOffsetAndLoad] = useState({
@@ -70,6 +70,16 @@ const ComicsList = ({handleComicInfoSheetOpen}) => {
   useEffect(() => {
     setScreenOrientation(isPortrait() ? 'portrait' : 'landscape');
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (comics.length == 0) {
+        fetchComics();
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     fetchComics();

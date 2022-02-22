@@ -93,6 +93,7 @@ const CharactersScreen = ({navigation}) => {
           />
         ) : (
           <CharacterList
+            navigation={navigation}
             handleCharacterInfoSheetOpen={handleCharacterInfoSheetOpen}
           />
         )}

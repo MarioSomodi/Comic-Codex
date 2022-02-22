@@ -6,7 +6,7 @@ import {isPortrait} from '../../utilites/screenOrientation';
 import PureCharacterItemView from './PureCharacterItemView';
 import {GetCharacters} from '../../api/controllers/charactersController';
 
-const CharacterList = ({handleCharacterInfoSheetOpen}) => {
+const CharacterList = ({handleCharacterInfoSheetOpen, navigation}) => {
   const [characters, setCharacters] = useState([]);
   const [screenOrientation, setScreenOrientation] = useState(null);
   const [offsetAndLoading, setOffsetAndLoad] = useState({
@@ -73,6 +73,16 @@ const CharacterList = ({handleCharacterInfoSheetOpen}) => {
   useEffect(() => {
     setScreenOrientation(isPortrait() ? 'portrait' : 'landscape');
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (characters.length == 0) {
+        fetchCharacters();
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     fetchCharacters();

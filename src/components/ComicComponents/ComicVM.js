@@ -114,7 +114,9 @@ const ComicVM = ({handleComicInfoSheetClose, comic, navigation}) => {
       </HStack>
       <Button
         mt={2}
-        onPress={() => navigation.navigate('ComicDetails', {comic: comic})}
+        onPress={() =>
+          navigation.navigate('ComicDetails', {comic: comic, load: false})
+        }
         borderRadius={25}
         bg="red.800"
         _pressed={{

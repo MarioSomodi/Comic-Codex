@@ -15,37 +15,55 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {isPortrait} from '../../utilites/screenOrientation';
 import PureComicItemView from './PureComicItemView';
 import {GetCharactersComics} from '../../api/controllers/charactersController';
+import {GetCreatorsComics} from '../../api/controllers/creatorController';
 
-const ComicsOfCharactersList = ({
+const ComicsOfItemList = ({
   handleComicInfoSheetOpen,
-  characterInfo,
-  setCharactersComicsView,
+  itemInfo,
+  setItemComicsView,
   navigation,
 }) => {
-  const [characterComics, setCharacterComics] = useState([]);
+  const [itemComics, setItemComics] = useState([]);
   const [screenOrientation, setScreenOrientation] = useState(null);
-  const [endOfResultsChar, setEndOfResultsChar] = useState(true);
-  const [offsetAndLoadingChar, setOffsetAndLoadChar] = useState({
-    offsetNumChar: 0,
-    loadingChar: false,
+  const [endOfResults, setEndOfResults] = useState(true);
+  const [offsetAndLoading, setOffsetAndLoad] = useState({
+    offsetNum: 0,
+    loading: false,
   });
 
-  const fetchCharacterComics = async first => {
-    var response = await GetCharactersComics(
-      99,
-      first ? 0 : offsetAndLoadingChar.offsetNumChar,
-      characterInfo.id,
-    );
+  const fetchItemComics = async first => {
+    var response;
+    switch (itemInfo.type) {
+      case 'characters': {
+        response = await GetCharactersComics(
+          99,
+          first ? 0 : offsetAndLoading.offsetNum,
+          itemInfo.id,
+        );
+        break;
+      }
+      case 'creators': {
+        response = await GetCreatorsComics(
+          99,
+          first ? 0 : offsetAndLoading.offsetNum,
+          itemInfo.id,
+        );
+        break;
+      }
+      default: {
+        break;
+      }
+    }
     if (typeof response[0] === 'string') {
-      setEndOfResultsChar(true);
+      setEndOfResults(true);
     } else {
       if (response.length < 99) {
-        setEndOfResultsChar(true);
+        setEndOfResults(true);
       } else {
-        setEndOfResultsChar(false);
+        setEndOfResults(false);
       }
-      setCharacterComics(prevCharacterComics =>
-        first ? response : [...prevCharacterComics, ...response],
+      setItemComics(prevItemComics =>
+        first ? response : [...prevItemComics, ...response],
       );
     }
   };
@@ -73,10 +91,10 @@ const ComicsOfCharactersList = ({
   }, []);
 
   const renderFooterChar = () => {
-    if (!offsetAndLoadingChar.loadingChar) {
+    if (!offsetAndLoading.loading) {
       return null;
     }
-    return endOfResultsChar ? (
+    return endOfResults ? (
       <Center>
         <Heading color="red.800" fontSize="sm">
           End of results
@@ -92,17 +110,36 @@ const ComicsOfCharactersList = ({
     );
   };
 
-  const handleLoadMoreCharacterComics = () => {
-    setOffsetAndLoadChar(prevObj => {
-      return {offsetNumChar: prevObj.offsetNumChar + 99, loadingChar: true};
+  const handleLoadMoreItemComics = () => {
+    setOffsetAndLoad(prevObj => {
+      return {offsetNum: prevObj.offsetNum + 99, loading: true};
     });
   };
 
   const keyExtractor = useCallback(item => item.id, []);
 
-  const goBackToCharacterScreen = () => {
-    setCharactersComicsView(false);
-    navigation.navigate('Characters');
+  const goBackToItemsScreen = () => {
+    setItemComicsView(false);
+    switch (itemInfo.type) {
+      case 'characters': {
+        navigation.navigate('CharacterDetails', {
+          loadFromId: itemInfo.id,
+          load: true,
+        });
+        break;
+      }
+      case 'creators': {
+        navigation.navigate('CreatorDetails', {
+          loadFromId: itemInfo.id,
+          origin: itemInfo.origin,
+          load: true,
+        });
+        break;
+      }
+      default: {
+        break;
+      }
+    }
   };
 
   useEffect(() => {
@@ -110,36 +147,36 @@ const ComicsOfCharactersList = ({
   }, []);
 
   useEffect(() => {
-    if (characterInfo !== null) {
-      setCharacterComics([]);
-      setOffsetAndLoadChar({
-        offsetNumChar: 0,
-        loadingChar: true,
+    if (itemInfo !== null) {
+      setItemComics([]);
+      setOffsetAndLoad({
+        offsetNum: 0,
+        loading: true,
       });
-      setEndOfResultsChar(false);
-      fetchCharacterComics(true);
+      setEndOfResults(false);
+      fetchItemComics(true);
     }
-  }, [characterInfo]);
+  }, [itemInfo]);
 
   useEffect(() => {
-    if (!endOfResultsChar && offsetAndLoadingChar.offsetNumChar !== 0) {
-      fetchCharacterComics(false);
+    if (!endOfResults && offsetAndLoading.offsetNum !== 0) {
+      fetchItemComics(false);
     }
-  }, [offsetAndLoadingChar.offsetNumChar]);
+  }, [offsetAndLoading.offsetNum]);
 
   return (
     <View flex={1}>
-      {characterComics.length > 0 && characterComics[0] !== 'false' ? (
+      {itemComics.length > 0 && itemComics[0] !== 'false' ? (
         <View flex={1}>
           <HStack alignItems="center" justifyContent="space-between">
             <Text m={1} flex={1} fontSize={17}>
-              Comics of character:{' '}
+              Comics of {itemInfo.type.substring(0, itemInfo.type.length - 1)}:{' '}
               <Text fontSize={17} bold={true}>
-                {characterInfo.name}
+                {itemInfo.name}
               </Text>
             </Text>
             <IconButton
-              onPress={goBackToCharacterScreen}
+              onPress={goBackToItemsScreen}
               alignSelf="flex-start"
               size="sm"
               ml={1}
@@ -158,10 +195,10 @@ const ComicsOfCharactersList = ({
           </HStack>
           <FlatList
             getItemLayout={getItemLayout}
-            onEndReached={handleLoadMoreCharacterComics}
+            onEndReached={handleLoadMoreItemComics}
             onEndReachedThreshold={0.5}
             m={1}
-            data={characterComics}
+            data={itemComics}
             ListFooterComponent={renderFooterChar}
             renderItem={renderItem}
             numColumns={screenOrientation === 'landscape' ? 6 : 3}
@@ -178,7 +215,7 @@ const ComicsOfCharactersList = ({
               size="lg"
             />
             <Heading color="red.800" fontSize="lg">
-              Loading characters comics
+              Loading {itemInfo.type} comics
             </Heading>
           </View>
         </Center>
@@ -187,4 +224,4 @@ const ComicsOfCharactersList = ({
   );
 };
 
-export default ComicsOfCharactersList;
+export default ComicsOfItemList;

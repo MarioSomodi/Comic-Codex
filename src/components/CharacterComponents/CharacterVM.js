@@ -115,7 +115,10 @@ const CharacterVM = ({
       <Button
         mt={2}
         onPress={() =>
-          navigation.navigate('CharacterDetails', {character: character})
+          navigation.navigate('CharacterDetails', {
+            character: character,
+            load: false,
+          })
         }
         borderRadius={25}
         bg="red.800"

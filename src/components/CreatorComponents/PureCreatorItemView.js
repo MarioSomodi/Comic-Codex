@@ -42,7 +42,10 @@ class PureCreatorItemView extends React.PureComponent {
               ml={3}
               color="red.800"
               onPress={() =>
-                navigation.navigate('CreatorDetails', {creator: item})
+                navigation.navigate('CreatorDetails', {
+                  creator: item,
+                  load: false,
+                })
               }
             />
           </HStack>

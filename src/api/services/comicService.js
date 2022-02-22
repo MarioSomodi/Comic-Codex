@@ -58,6 +58,21 @@ const formatResultToComic = result => {
   return currentComic;
 };
 
+const getComicFromApi = async id => {
+  var comic;
+  var authString = await getApiAuthString();
+  var response = null;
+  try {
+    response = await marvelApi.get('comics/' + id + authString, {
+      params: {comicId: id},
+    });
+    comic = formatResultToComic(response.data.data.results[0]);
+  } catch (error) {
+    console.log({response: response, exception: error});
+  }
+  return comic;
+};
+
 const getComicsFromApi = async (limit, offset, searchValue) => {
   var comics = [];
   if (limit === null) {
@@ -73,16 +88,21 @@ const getComicsFromApi = async (limit, offset, searchValue) => {
     paramsObj.titleStartsWith = searchValue;
   }
   var authString = await getApiAuthString();
-  const response = await marvelApi.get('comics' + authString, {
-    params: paramsObj,
-  });
-  if (response.data.data.count === 0) {
-    comics.push('false');
-    return comics;
+  var response = null;
+  try {
+    response = await marvelApi.get('comics' + authString, {
+      params: paramsObj,
+    });
+    if (response.data.data.count === 0) {
+      comics.push('false');
+      return comics;
+    }
+    response.data.data.results.forEach(result => {
+      comics.push(formatResultToComic(result));
+    });
+  } catch (error) {
+    console.log({response: response, exception: error});
   }
-  response.data.data.results.forEach(result => {
-    comics.push(formatResultToComic(result));
-  });
   return comics;
 };
 
@@ -97,20 +117,30 @@ const getComicsCharactersFromApi = async (limit, offset, id) => {
     offset: offset,
   };
   var authString = await getApiAuthString();
-  const response = await marvelApi.get(
-    'comics/' + id + '/characters' + authString,
-    {
-      params: paramsObj,
-    },
-  );
-  if (response.data.data.count === 0) {
-    comicsCharacters.push('false');
-    return comicsCharacters;
+  var response = null;
+  try {
+    response = await marvelApi.get(
+      'comics/' + id + '/characters' + authString,
+      {
+        params: paramsObj,
+      },
+    );
+    if (response.data.data.count === 0) {
+      comicsCharacters.push('false');
+      return comicsCharacters;
+    }
+    response.data.data.results.forEach(result => {
+      comicsCharacters.push(formatResultToCharacter(result));
+    });
+  } catch (error) {
+    console.log({response: response, exception: error});
   }
-  response.data.data.results.forEach(result => {
-    comicsCharacters.push(formatResultToCharacter(result));
-  });
   return comicsCharacters;
 };
 
-export {getComicsFromApi, formatResultToComic, getComicsCharactersFromApi};
+export {
+  getComicsFromApi,
+  formatResultToComic,
+  getComicsCharactersFromApi,
+  getComicFromApi,
+};

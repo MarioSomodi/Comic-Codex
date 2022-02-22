@@ -41,17 +41,38 @@ const getCharactersFromApi = async (limit, offset, searchValue) => {
     paramsObj.nameStartsWith = searchValue;
   }
   var authString = await getApiAuthString();
-  const response = await marvelApi.get('characters' + authString, {
-    params: paramsObj,
-  });
-  if (response.data.data.count === 0) {
-    characters.push('false');
-    return characters;
+  var response = null;
+  try {
+    response = await marvelApi.get('characters' + authString, {
+      params: paramsObj,
+    });
+    if (response.data.data.count === 0) {
+      characters.push('false');
+      return characters;
+    }
+    response.data.data.results.forEach(result => {
+      characters.push(formatResultToCharacter(result));
+    });
+  } catch (error) {
+    console.log({response: response, exception: error});
   }
-  response.data.data.results.forEach(result => {
-    characters.push(formatResultToCharacter(result));
-  });
   return characters;
+};
+
+const getCharacterFromApi = async id => {
+  var character;
+  var authString = await getApiAuthString();
+  var response = null;
+  try {
+    response = await marvelApi.get('characters/' + id + authString, {
+      params: {characterId: id},
+    });
+    character = formatResultToCharacter(response.data.data.results[0]);
+  } catch (error) {
+    console.log({response: response, exception: error});
+  }
+
+  return character;
 };
 
 const getCharactersComicsFromApi = async (limit, offset, id) => {
@@ -65,19 +86,24 @@ const getCharactersComicsFromApi = async (limit, offset, id) => {
     offset: offset,
   };
   var authString = await getApiAuthString();
-  const response = await marvelApi.get(
-    'characters/' + id + '/comics' + authString,
-    {
-      params: paramsObj,
-    },
-  );
-  if (response.data.data.count === 0) {
-    charactersComics.push('false');
-    return charactersComics;
+  var response = null;
+  try {
+    response = await marvelApi.get(
+      'characters/' + id + '/comics' + authString,
+      {
+        params: paramsObj,
+      },
+    );
+    if (response.data.data.count === 0) {
+      charactersComics.push('false');
+      return charactersComics;
+    }
+    response.data.data.results.forEach(result => {
+      charactersComics.push(formatResultToComic(result));
+    });
+  } catch (error) {
+    console.log({response: response, exception: error});
   }
-  response.data.data.results.forEach(result => {
-    charactersComics.push(formatResultToComic(result));
-  });
   return charactersComics;
 };
 
@@ -85,4 +111,5 @@ export {
   getCharactersFromApi,
   getCharactersComicsFromApi,
   formatResultToCharacter,
+  getCharacterFromApi,
 };

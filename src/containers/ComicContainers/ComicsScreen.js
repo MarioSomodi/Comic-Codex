@@ -7,15 +7,15 @@ import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import ComicVM from '../../components/ComicComponents/ComicVM';
 import ComicsList from '../../components/ComicComponents/ComicsList';
 import ComicsSearchList from '../../components/ComicComponents/ComicsSearchList';
-import ComicsOfCharactersList from '../../components/ComicComponents/ComicsOfCharacterList';
+import ComicsOfItemList from '../../components/ComicComponents/ComicsOfItemList';
 
 const ComicsScreen = ({navigation}) => {
   const route = useRoute();
 
-  const [charactersComicsView, setCharactersComicsView] = useState(false);
+  const [itemComicsView, setItemComicsView] = useState(false);
   const [searchTrigger, setSearchTrigger] = useState(false);
   const [searchValue, setSearchValue] = useState({value: '', newSearch: true});
-  const [characterInfo, setCharacterInfo] = useState(null);
+  const [itemInfo, setItemInfo] = useState(null);
   const [currentComic, setCurrentComic] = useState(null);
 
   const bottomSheetRef = useRef(null);
@@ -40,16 +40,39 @@ const ComicsScreen = ({navigation}) => {
 
   useEffect(() => {
     if (route.params !== undefined) {
-      setCharacterInfo({id: route.params.id, name: route.params.name});
-      setCharactersComicsView(true);
+      switch (route.params.type) {
+        case 'characters': {
+          setItemInfo({
+            id: route.params.id,
+            name: route.params.name,
+            type: route.params.type,
+          });
+          break;
+        }
+        case 'creators': {
+          setItemInfo({
+            id: route.params.id,
+            name: route.params.name,
+            type: route.params.type,
+            origin: route.params.origin,
+            comicId:
+              route.params.origin === 'comics' ? route.params.comicId : null,
+          });
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+      setItemComicsView(true);
     } else {
-      setCharactersComicsView(false);
+      setItemComicsView(false);
     }
   }, [route]);
 
   return (
     <View flex={1}>
-      {!charactersComicsView ? (
+      {!itemComicsView ? (
         <Input
           flex={0}
           placeholder="Search comics"
@@ -77,12 +100,12 @@ const ComicsScreen = ({navigation}) => {
         />
       ) : null}
       <View flex={1} justifyContent="center">
-        {charactersComicsView ? (
-          <ComicsOfCharactersList
+        {itemComicsView ? (
+          <ComicsOfItemList
             handleComicInfoSheetOpen={handleComicInfoSheetOpen}
-            characterInfo={characterInfo}
+            itemInfo={itemInfo}
             navigation={navigation}
-            setCharactersComicsView={setCharactersComicsView}
+            setItemComicsView={setItemComicsView}
           />
         ) : searchTrigger ? (
           <ComicsSearchList
@@ -92,7 +115,10 @@ const ComicsScreen = ({navigation}) => {
             setSearchValue={setSearchValue}
           />
         ) : (
-          <ComicsList handleComicInfoSheetOpen={handleComicInfoSheetOpen} />
+          <ComicsList
+            navigation={navigation}
+            handleComicInfoSheetOpen={handleComicInfoSheetOpen}
+          />
         )}
         <BottomSheet
           ref={bottomSheetRef}
