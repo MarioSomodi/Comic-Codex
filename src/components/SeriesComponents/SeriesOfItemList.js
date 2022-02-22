@@ -13,18 +13,17 @@ import {
 } from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {isPortrait} from '../../utilites/screenOrientation';
-import PureComicItemView from './PureComicItemView';
-import {GetCharactersComics} from '../../api/controllers/charactersController';
-import {GetCreatorsComics} from '../../api/controllers/creatorController';
-import {GetSeriesComics} from '../../api/controllers/seriesController';
+import PureSeriesItemView from './PureSeriesItemView';
+import {GetCharactersSeries} from '../../api/controllers/charactersController';
+import {GetCreatorsSeries} from '../../api/controllers/creatorController';
 
-const ComicsOfItemList = ({
-  handleComicInfoSheetOpen,
+const SeriesOfItemList = ({
+  handleSeriesInfoSheetOpen,
   itemInfo,
-  setItemComicsView,
+  setItemSeriesView,
   navigation,
 }) => {
-  const [itemComics, setItemComics] = useState([]);
+  const [itemSeries, setItemSeries] = useState([]);
   const [screenOrientation, setScreenOrientation] = useState(null);
   const [endOfResults, setEndOfResults] = useState(true);
   const [offsetAndLoading, setOffsetAndLoad] = useState({
@@ -32,11 +31,11 @@ const ComicsOfItemList = ({
     loading: false,
   });
 
-  const fetchItemComics = async first => {
+  const fetchItemSeries = async first => {
     var response;
     switch (itemInfo.type) {
       case 'characters': {
-        response = await GetCharactersComics(
+        response = await GetCharactersSeries(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
@@ -44,15 +43,7 @@ const ComicsOfItemList = ({
         break;
       }
       case 'creators': {
-        response = await GetCreatorsComics(
-          99,
-          first ? 0 : offsetAndLoading.offsetNum,
-          itemInfo.id,
-        );
-        break;
-      }
-      case 'series': {
-        response = await GetSeriesComics(
+        response = await GetCreatorsSeries(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
@@ -71,8 +62,8 @@ const ComicsOfItemList = ({
       } else {
         setEndOfResults(false);
       }
-      setItemComics(prevItemComics =>
-        first ? response : [...prevItemComics, ...response],
+      setItemSeries(prevItemSeries =>
+        first ? response : [...prevItemSeries, ...response],
       );
     }
   };
@@ -92,8 +83,8 @@ const ComicsOfItemList = ({
 
   const renderItem = useCallback(({item}) => {
     return (
-      <PureComicItemView
-        handleComicInfoSheetOpen={handleComicInfoSheetOpen}
+      <PureSeriesItemView
+        handleSeriesInfoSheetOpen={handleSeriesInfoSheetOpen}
         item={item}
       />
     );
@@ -119,7 +110,7 @@ const ComicsOfItemList = ({
     );
   };
 
-  const handleLoadMoreItemComics = () => {
+  const handleLoadMoreItemSeries = () => {
     setOffsetAndLoad(prevObj => {
       return {offsetNum: prevObj.offsetNum + 99, loading: true};
     });
@@ -128,7 +119,7 @@ const ComicsOfItemList = ({
   const keyExtractor = useCallback(item => item.id, []);
 
   const goBackToItemsScreen = () => {
-    setItemComicsView(false);
+    setItemSeriesView(false);
     switch (itemInfo.type) {
       case 'characters': {
         navigation.navigate('Root', {screen: 'Characters'});
@@ -146,14 +137,14 @@ const ComicsOfItemList = ({
         });
         break;
       }
-      case 'series': {
-        navigation.navigate('Root', {screen: 'Series'});
-        navigation.navigate('SeriesDetails', {
-          loadFromId: itemInfo.id,
-          load: true,
-        });
-        break;
-      }
+      //   case 'series': {
+      //     navigation.navigate('Root', {screen: 'Series'});
+      //     navigation.navigate('SeriesDetails', {
+      //       loadFromId: itemInfo.id,
+      //       load: true,
+      //     });
+      //     break;
+      //   }
       default: {
         break;
       }
@@ -166,29 +157,29 @@ const ComicsOfItemList = ({
 
   useEffect(() => {
     if (itemInfo !== null) {
-      setItemComics([]);
+      setItemSeries([]);
       setOffsetAndLoad({
         offsetNum: 0,
         loading: true,
       });
       setEndOfResults(false);
-      fetchItemComics(true);
+      fetchItemSeries(true);
     }
   }, [itemInfo]);
 
   useEffect(() => {
     if (!endOfResults && offsetAndLoading.offsetNum !== 0) {
-      fetchItemComics(false);
+      fetchItemSeries(false);
     }
   }, [offsetAndLoading.offsetNum]);
 
   return (
     <View flex={1}>
-      {itemComics.length > 0 && itemComics[0] !== 'false' ? (
+      {itemSeries.length > 0 && itemSeries[0] !== 'false' ? (
         <View flex={1}>
           <HStack alignItems="center" justifyContent="space-between">
             <Text m={1} flex={1} fontSize={17}>
-              Comics of{' '}
+              Series of{' '}
               {itemInfo.type !== 'series'
                 ? itemInfo.type.substring(0, itemInfo.type.length - 1)
                 : itemInfo.type}
@@ -217,10 +208,10 @@ const ComicsOfItemList = ({
           </HStack>
           <FlatList
             getItemLayout={getItemLayout}
-            onEndReached={handleLoadMoreItemComics}
+            onEndReached={handleLoadMoreItemSeries}
             onEndReachedThreshold={0.5}
             m={1}
-            data={itemComics}
+            data={itemSeries}
             ListFooterComponent={renderFooterChar}
             renderItem={renderItem}
             numColumns={screenOrientation === 'landscape' ? 6 : 3}
@@ -232,12 +223,12 @@ const ComicsOfItemList = ({
         <Center flex={1}>
           <View>
             <Spinner
-              accessibilityLabel="Loading comics"
+              accessibilityLabel="Loading series"
               color="red.800"
               size="lg"
             />
             <Heading color="red.800" fontSize="lg">
-              Loading {itemInfo.type} comics
+              Loading {itemInfo.type} series
             </Heading>
           </View>
         </Center>
@@ -246,4 +237,4 @@ const ComicsOfItemList = ({
   );
 };
 
-export default ComicsOfItemList;
+export default SeriesOfItemList;

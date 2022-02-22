@@ -8,6 +8,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ComicsScreen from '../containers/ComicContainers/ComicsScreen';
 import CharactersScreen from '../containers/CharacterContainers/CharactersScreen';
 import CreatorsScreen from '../containers/CreatorContainers/CreatorsScreen';
+import SeriesScreen from '../containers/SeriesContainers/SeriesScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -19,6 +20,8 @@ const getIcon = screenName => {
       return 'person';
     case 'Creators':
       return 'edit';
+    case 'Series':
+      return 'collections-bookmark';
     default:
       return undefined;
   }
@@ -81,6 +84,7 @@ const MyDrawer = ({user}) => {
   return (
     <Box safeArea flex={1}>
       <Drawer.Navigator
+        backBehavior="history"
         screenOptions={{
           headerShown: false,
         }}
@@ -93,6 +97,9 @@ const MyDrawer = ({user}) => {
         </Drawer.Screen>
         <Drawer.Screen name="Creators">
           {props => <CreatorsScreen {...props} user={user} />}
+        </Drawer.Screen>
+        <Drawer.Screen name="Series">
+          {props => <SeriesScreen {...props} user={user} />}
         </Drawer.Screen>
       </Drawer.Navigator>
     </Box>

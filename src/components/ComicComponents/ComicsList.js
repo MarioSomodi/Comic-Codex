@@ -72,16 +72,6 @@ const ComicsList = ({handleComicInfoSheetOpen, navigation}) => {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      if (comics.length == 0) {
-        fetchComics();
-      }
-    });
-
-    return unsubscribe;
-  }, [navigation]);
-
-  useEffect(() => {
     fetchComics();
   }, [offsetAndLoading.offsetNum]);
 

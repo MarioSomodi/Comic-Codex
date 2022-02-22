@@ -1,11 +1,15 @@
 import React from 'react';
 import {View, HStack, Text, Box, StatusBar, Icon} from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {useNavigationState} from '@react-navigation/native';
+import {
+  useNavigationState,
+  useNavigation,
+  DrawerActions,
+} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
-import * as RootNavigation from './RootNavigation';
 
 function AppBar({user}) {
+  const navigation = useNavigation();
   const stateIndex = useNavigationState(state => state.index);
   const signOutUser = () => {
     auth()
@@ -28,7 +32,9 @@ function AppBar({user}) {
                 size="6"
                 ml={3}
                 color="white"
-                onPress={() => RootNavigation.toggleDrawer()}
+                onPress={() =>
+                  navigation.dispatch(DrawerActions.toggleDrawer())
+                }
               />
             ) : (
               <Icon
@@ -36,7 +42,7 @@ function AppBar({user}) {
                 size="6"
                 ml={3}
                 color="white"
-                onPress={() => RootNavigation.Back()}
+                onPress={() => navigation.goBack()}
               />
             )}
           </>

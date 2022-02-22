@@ -58,16 +58,6 @@ const CreatorsList = ({navigation}) => {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      if (creators.length == 0) {
-        fetchCreators();
-      }
-    });
-
-    return unsubscribe;
-  }, [navigation]);
-
-  useEffect(() => {
     fetchCreators();
   }, [offsetAndLoading.offsetNum]);
 

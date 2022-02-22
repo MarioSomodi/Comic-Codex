@@ -2,33 +2,33 @@ import React from 'react';
 import {
   View,
   Text,
-  IconButton,
-  Badge,
   Button,
+  IconButton,
   HStack,
   Image,
+  Badge,
   VStack,
 } from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import placeholderImage from '../../assets/images/Placeholder.png';
 
-const CharacterVM = ({
-  handleCharacterInfoSheetClose,
-  character,
-  navigation,
-}) => {
+const SeriesVM = ({handleSeriesInfoSheetClose, series, navigation}) => {
   const getExcerpt = () => {
-    var results = character.description.match(/[^\.!\?]+[\.!\?]+/g);
+    var results = series.description.match(/[^\.!\?]+[\.!\?]+/g);
     var excerpt = '';
-    results.forEach(sentance => {
-      if (excerpt.length < 100) {
-        excerpt += sentance;
-      }
-    });
+    if (results !== null) {
+      results.forEach(sentance => {
+        if (excerpt.length < 100) {
+          excerpt += sentance;
+        }
+      });
+    } else {
+      excerpt = series.description;
+    }
     return excerpt;
   };
   return (
-    <View m={3}>
+    <View m={3} justifyContent="space-evenly">
       <HStack>
         <Image
           borderColor="black"
@@ -36,23 +36,23 @@ const CharacterVM = ({
           borderRadius="md"
           justifyContent="center"
           alignItems="center"
-          alt={character.name}
+          alt={series.title}
           h={225}
           w={150}
-          key={character.id}
+          key={series.id}
           source={
-            character.thumbnailUrl === true
+            series.thumbnail === true
               ? placeholderImage
-              : {uri: character.thumbnailUrl}
+              : {uri: series.thumbnail}
           }
         />
         <VStack pl={2} flex={1}>
           <HStack alignItems="center" justifyContent="space-between">
             <Text bold={true} flex={1} fontSize={15}>
-              {character.name}
+              {series.title}
             </Text>
             <IconButton
-              onPress={handleCharacterInfoSheetClose}
+              onPress={handleSeriesInfoSheetClose}
               alignSelf="flex-start"
               size="sm"
               ml={1}
@@ -73,7 +73,7 @@ const CharacterVM = ({
         </VStack>
       </HStack>
       <HStack>
-        {character.numOfComics !== 0 ? (
+        {series.comicsAvailable !== 0 ? (
           <Badge
             mt={2}
             mr={1}
@@ -82,11 +82,11 @@ const CharacterVM = ({
             alignSelf="center"
             variant="solid">
             <Text color="white" bold={true}>
-              Comics : {character.numOfComics}
+              Comics : {series.comicsAvailable}
             </Text>
           </Badge>
         ) : null}
-        {character.numOfEvents !== 0 ? (
+        {series.charactersAvailable !== 0 ? (
           <Badge
             mt={2}
             mr={1}
@@ -95,11 +95,11 @@ const CharacterVM = ({
             alignSelf="center"
             variant="solid">
             <Text color="white" bold={true}>
-              Events : {character.numOfEvents}
+              Characters : {series.charactersAvailable}
             </Text>
           </Badge>
         ) : null}
-        {character.numOfStories !== 0 ? (
+        {series.storiesAvailable !== 0 ? (
           <Badge
             mt={2}
             borderRadius={30}
@@ -107,7 +107,19 @@ const CharacterVM = ({
             alignSelf="center"
             variant="solid">
             <Text color="white" bold={true}>
-              Stories : {character.numOfStories}
+              Stories : {series.storiesAvailable}
+            </Text>
+          </Badge>
+        ) : null}
+        {series.eventsAvailable !== 0 ? (
+          <Badge
+            mt={2}
+            borderRadius={30}
+            bgColor="red.800"
+            alignSelf="center"
+            variant="solid">
+            <Text color="white" bold={true}>
+              Events : {series.eventsAvailable}
             </Text>
           </Badge>
         ) : null}
@@ -115,9 +127,9 @@ const CharacterVM = ({
       <Button
         mt={2}
         onPress={() => {
-          handleCharacterInfoSheetClose();
-          navigation.navigate('CharacterDetails', {
-            character: character,
+          handleSeriesInfoSheetClose();
+          navigation.navigate('SeriesDetails', {
+            seriesSingle: series,
             load: false,
           });
         }}
@@ -130,10 +142,10 @@ const CharacterVM = ({
           fontSize: 'md',
           fontWeight: '500',
         }}>
-        Character details
+        Series details
       </Button>
     </View>
   );
 };
 
-export default CharacterVM;
+export default SeriesVM;

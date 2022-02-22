@@ -37,7 +37,7 @@ const ComicDetails = ({route, navigation}) => {
     if (route.params.load === true) {
       getComic();
     }
-  }, [route.params.load]);
+  }, [route.params]);
 
   return (
     <ScrollView
@@ -184,7 +184,11 @@ const ComicDetails = ({route, navigation}) => {
                       onPress={() =>
                         navigation.navigate('Root', {
                           screen: 'Characters',
-                          params: {id: comic.id, title: comic.title},
+                          params: {
+                            id: comic.id,
+                            name: comic.title,
+                            type: 'comics',
+                          },
                         })
                       }
                       icon={
@@ -210,12 +214,12 @@ const ComicDetails = ({route, navigation}) => {
                       backgroundColor="red.800"
                       borderRadius="full"
                       size="lg"
-                      // onPress={() =>
-                      //   navigation.navigate('Root', {
-                      //     screen: 'Characters',
-                      //     params: {id: comic.id, title: comic.title},
-                      //   })
-                      // }
+                      onPress={() =>
+                        navigation.navigate('SeriesDetails', {
+                          loadFromId: comic.seriesId,
+                          load: true,
+                        })
+                      }
                       icon={
                         <Icon
                           color="white"
@@ -322,7 +326,6 @@ const ComicDetails = ({route, navigation}) => {
                       navigation={navigation}
                       item={creator}
                       origin="comics"
-                      comicId={comic.id}
                     />
                   );
                 })}

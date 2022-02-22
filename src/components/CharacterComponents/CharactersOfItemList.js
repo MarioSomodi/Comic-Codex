@@ -15,41 +15,59 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {isPortrait} from '../../utilites/screenOrientation';
 import PureCharacterItemView from './PureCharacterItemView';
 import {GetComicsCharacters} from '../../api/controllers/comicsController';
+import {GetSeriesCharacters} from '../../api/controllers/seriesController';
 
-const CharactersOfComicList = ({
+const CharactersOfItemList = ({
   handleCharacterInfoSheetOpen,
-  comicInfo,
-  setComicsCharactersView,
+  itemInfo,
+  setItemCharactersView,
   navigation,
 }) => {
-  const [comicsCharacters, setComicsCharacters] = useState([]);
+  const [itemCharacters, setItemCharacters] = useState([]);
   const [screenOrientation, setScreenOrientation] = useState(null);
-  const [endOfResultsComics, setEndOfResultsComics] = useState(true);
-  const [offsetAndLoadingComics, setOffsetAndLoadComics] = useState({
-    offsetNumComics: 0,
-    loadingComics: false,
+  const [endOfResults, setEndOfResults] = useState(true);
+  const [offsetAndLoading, setOffsetAndLoad] = useState({
+    offsetNum: 0,
+    loading: false,
   });
 
   Dimensions.addEventListener('change', () => {
     setScreenOrientation(isPortrait() ? 'portrait' : 'landscape');
   });
 
-  const fetchComicsCharacters = async first => {
-    var response = await GetComicsCharacters(
-      99,
-      first ? 0 : offsetAndLoadingComics.offsetNumComics,
-      comicInfo.id,
-    );
+  const fetchItemsCharacters = async first => {
+    var response = null;
+    switch (itemInfo.type) {
+      case 'comics': {
+        response = await GetComicsCharacters(
+          99,
+          first ? 0 : offsetAndLoading.offsetNum,
+          itemInfo.id,
+        );
+        break;
+      }
+      case 'series': {
+        response = await GetSeriesCharacters(
+          99,
+          first ? 0 : offsetAndLoading.offsetNum,
+          itemInfo.id,
+        );
+        break;
+      }
+      default: {
+        break;
+      }
+    }
     if (typeof response[0] === 'string') {
-      setEndOfResultsComics(true);
+      setEndOfResults(true);
     } else {
       if (response.length < 99) {
-        setEndOfResultsComics(true);
+        setEndOfResults(true);
       } else {
-        setEndOfResultsComics(false);
+        setEndOfResults(false);
       }
-      setComicsCharacters(prevComicCharacters =>
-        first ? response : [...prevComicCharacters, ...response],
+      setItemCharacters(prevItemCharacters =>
+        first ? response : [...prevItemCharacters, ...response],
       );
     }
   };
@@ -73,10 +91,10 @@ const CharactersOfComicList = ({
   }, []);
 
   const renderFooterComic = () => {
-    if (!offsetAndLoadingComics.loadingComics) {
+    if (!offsetAndLoading.loading) {
       return null;
     }
-    return endOfResultsComics ? (
+    return endOfResults ? (
       <Center>
         <Heading color="red.800" fontSize="sm">
           End of results
@@ -84,7 +102,7 @@ const CharactersOfComicList = ({
       </Center>
     ) : (
       <Center>
-        <Spinner accessibilityLabel="Loading more comics" color="red.800" />
+        <Spinner accessibilityLabel="Loading more" color="red.800" />
         <Heading color="red.800" fontSize="sm">
           Loading
         </Heading>
@@ -92,15 +110,43 @@ const CharactersOfComicList = ({
     );
   };
 
-  const handleLoadMoreComicsCharacters = () => {
-    setOffsetAndLoadComics(prevObj => {
-      return {offsetNumComics: prevObj.offsetNumChar + 99, loadingComics: true};
+  const handleLoadMoreItemCharacters = () => {
+    setOffsetAndLoad(prevObj => {
+      return {offsetNum: prevObj.offsetNum + 99, loading: true};
     });
   };
 
-  const goBackToComicsScreen = () => {
-    setComicsCharactersView(false);
-    navigation.navigate('Comics');
+  const goBackToItemsScreen = () => {
+    setItemCharactersView(false);
+    switch (itemInfo.type) {
+      case 'comics': {
+        navigation.navigate('Root', {screen: 'Comics'});
+        navigation.navigate('ComicDetails', {
+          loadFromId: itemInfo.id,
+          load: true,
+        });
+        break;
+      }
+      case 'creators': {
+        navigation.navigate('Root', {screen: 'Characters'});
+        navigation.navigate('CreatorDetails', {
+          loadFromId: itemInfo.id,
+          load: true,
+        });
+        break;
+      }
+      case 'series': {
+        navigation.navigate('Root', {screen: 'Series'});
+        navigation.navigate('SeriesDetails', {
+          loadFromId: itemInfo.id,
+          load: true,
+        });
+        break;
+      }
+      default: {
+        break;
+      }
+    }
   };
 
   const keyExtractor = useCallback(item => item.id, []);
@@ -110,36 +156,40 @@ const CharactersOfComicList = ({
   }, []);
 
   useEffect(() => {
-    if (comicInfo !== null) {
-      setComicsCharacters([]);
-      setOffsetAndLoadComics({
-        offsetNumChar: 0,
-        loadingComics: true,
+    if (itemInfo !== null) {
+      setItemCharacters([]);
+      setOffsetAndLoad({
+        offsetNum: 0,
+        loading: true,
       });
-      setEndOfResultsComics(false);
-      fetchComicsCharacters(true);
+      setEndOfResults(false);
+      fetchItemsCharacters(true);
     }
-  }, [comicInfo]);
+  }, [itemInfo]);
 
   useEffect(() => {
-    if (!endOfResultsComics && offsetAndLoadingComics.offsetNumComics !== 0) {
-      fetchComicsCharacters(false);
+    if (!endOfResults && offsetAndLoading.offsetNum !== 0) {
+      fetchItemsCharacters(false);
     }
-  }, [offsetAndLoadingComics.offsetNumComics]);
+  }, [offsetAndLoading.offsetNum]);
 
   return (
     <View flex={1}>
-      {comicsCharacters.length > 0 && comicsCharacters[0] !== 'false' ? (
+      {itemCharacters.length > 0 && itemCharacters[0] !== 'false' ? (
         <View flex={1}>
           <HStack alignItems="center" justifyContent="space-between">
             <Text m={1} flex={1} fontSize={17}>
-              Characters of comic:{' '}
+              Characters of{' '}
+              {itemInfo.type !== 'series'
+                ? itemInfo.type.substring(0, itemInfo.type.length - 1)
+                : itemInfo.type}
+              :{' '}
               <Text fontSize={17} bold={true}>
-                {comicInfo.title}
+                {itemInfo.name}
               </Text>
             </Text>
             <IconButton
-              onPress={goBackToComicsScreen}
+              onPress={goBackToItemsScreen}
               alignSelf="flex-start"
               size="sm"
               ml={1}
@@ -158,10 +208,10 @@ const CharactersOfComicList = ({
           </HStack>
           <FlatList
             getItemLayout={getItemLayout}
-            onEndReached={handleLoadMoreComicsCharacters}
+            onEndReached={handleLoadMoreItemCharacters}
             onEndReachedThreshold={0.5}
             m={1}
-            data={comicsCharacters}
+            data={itemCharacters}
             ListFooterComponent={renderFooterComic}
             renderItem={renderItem}
             numColumns={screenOrientation === 'landscape' ? 6 : 3}
@@ -173,12 +223,12 @@ const CharactersOfComicList = ({
         <Center flex={1}>
           <View>
             <Spinner
-              accessibilityLabel="Loading comics characters"
+              accessibilityLabel="Loading characters"
               color="red.800"
               size="lg"
             />
             <Heading color="red.800" fontSize="lg">
-              Loading comics characters
+              Loading {itemInfo.type} characters
             </Heading>
           </View>
         </Center>
@@ -187,4 +237,4 @@ const CharactersOfComicList = ({
   );
 };
 
-export default CharactersOfComicList;
+export default CharactersOfItemList;

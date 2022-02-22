@@ -1,6 +1,7 @@
 import {marvelApi, getApiAuthString} from '../apiConfig';
 import Character from '../../models/character';
 import {formatResultToComic} from '../services/comicService';
+import {formatResultToSeries} from '../services/seriesService';
 
 const formatResultToCharacter = result => {
   var description =
@@ -107,9 +108,42 @@ const getCharactersComicsFromApi = async (limit, offset, id) => {
   return charactersComics;
 };
 
+const getCharactersSeriesFromApi = async (limit, offset, id) => {
+  var charactersSeries = [];
+  if (limit === null) {
+    limit = 99;
+  }
+  var paramsObj = {
+    limit: limit,
+    orderBy: '-modified',
+    offset: offset,
+  };
+  var authString = await getApiAuthString();
+  var response = null;
+  try {
+    response = await marvelApi.get(
+      'characters/' + id + '/series' + authString,
+      {
+        params: paramsObj,
+      },
+    );
+    if (response.data.data.count === 0) {
+      charactersSeries.push('false');
+      return charactersSeries;
+    }
+    response.data.data.results.forEach(result => {
+      charactersSeries.push(formatResultToSeries(result));
+    });
+  } catch (error) {
+    console.log({response: response, exception: error});
+  }
+  return charactersSeries;
+};
+
 export {
   getCharactersFromApi,
   getCharactersComicsFromApi,
   formatResultToCharacter,
   getCharacterFromApi,
+  getCharactersSeriesFromApi,
 };

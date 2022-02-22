@@ -1,10 +1,9 @@
 import axios from 'axios';
 import {firebase} from '@react-native-firebase/database';
-import MD5 from 'crypto-js/md5';
+import {md5} from '../utilites/md5';
 
 var privateKey = null;
 var publicKey = 'f7d2fbda7534b27e3668700680e22b21';
-var usedTimestamp = null;
 
 const getApiPrivateKey = async () => {
   const database = firebase
@@ -20,20 +19,12 @@ const getApiPrivateKey = async () => {
     });
 };
 
-const getTimestamp = () => {
-  return Date.now();
-};
-
-const getHash = async () => {
+const getApiAuthString = async () => {
+  let usedTimestamp = Date.now();
   if (privateKey == null) {
     await getApiPrivateKey();
   }
-  usedTimestamp = getTimestamp();
-  return MD5(usedTimestamp + privateKey + publicKey).toString();
-};
-
-const getApiAuthString = async () => {
-  var hash = await getHash();
+  var hash = md5(usedTimestamp + privateKey + publicKey);
   return '?ts=' + usedTimestamp + '&apikey=' + publicKey + '&hash=' + hash;
 };
 

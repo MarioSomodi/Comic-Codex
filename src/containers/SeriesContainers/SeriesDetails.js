@@ -6,62 +6,64 @@ import {
   HStack,
   Image,
   Text,
-  VStack,
   Divider,
-  IconButton,
-  Icon,
+  VStack,
   ScrollView,
+  Icon,
+  IconButton,
   Center,
   Spinner,
   Heading,
 } from 'native-base';
 import placeholderImage from '../../assets/images/Placeholder.png';
-import {GetCharacter} from '../../api/controllers/charactersController';
+import PureCreatorItemView from '../../components/CreatorComponents/PureCreatorItemView';
+import {GetSeriesSingle} from '../../api/controllers/seriesController';
 
-const CharacterDetails = ({navigation, route}) => {
-  const [character, setCharacter] = useState(null);
+const ComicDetails = ({route, navigation}) => {
+  const [seriesSingle, setSeriesSingle] = useState(null);
 
-  const getCharacter = async () => {
-    var response = await GetCharacter(route.params.loadFromId);
-    setCharacter(response);
+  const getSingleSeries = async () => {
+    var response = await GetSeriesSingle(route.params.loadFromId);
+    setSeriesSingle(response);
   };
 
   useEffect(() => {
-    if (route.params.character != null) {
-      setCharacter(route.params.character);
+    if (route.params.seriesSingle != null) {
+      setSeriesSingle(route.params.seriesSingle);
     }
   }, []);
 
   useEffect(() => {
     if (route.params.load === true) {
-      getCharacter();
+      getSingleSeries();
     }
   }, [route.params.load]);
 
   return (
     <ScrollView
       contentContainerStyle={{
-        justifyContent: character != null ? 'flex-start' : 'center',
+        justifyContent: seriesSingle != null ? 'flex-start' : 'center',
         flexGrow: 1,
       }}
       p={2}>
-      {character != null ? (
-        <VStack>
-          <HStack>
+      {seriesSingle != null ? (
+        <VStack mb={10}>
+          <HStack justifyContent="center" alignItems="center">
             <Image
+              alignSelf="center"
               borderColor="black"
               borderWidth={1}
               borderRadius="md"
               justifyContent="center"
               alignItems="center"
-              alt={character.name}
+              alt={seriesSingle.title}
               h={225}
               w={150}
-              key={character.id}
+              key={seriesSingle.id}
               source={
-                character.thumbnailUrl === true
+                seriesSingle.thumbnail === true
                   ? placeholderImage
-                  : {uri: character.thumbnailUrl}
+                  : {uri: seriesSingle.thumbnail}
               }
             />
             <Divider
@@ -73,19 +75,16 @@ const CharacterDetails = ({navigation, route}) => {
             />
             <VStack flex={1}>
               <Text m={1} bold={true} fontSize={20}>
-                {character.name}
+                {seriesSingle.title}
               </Text>
               <Divider h={0.5} borderRadius={50} backgroundColor="red.800" />
-              <Text m={1} bold={true} fontSize={18}>
-                Appears in
-              </Text>
-              {character.numOfComics !== 0 ? (
+              {seriesSingle.startYear != null ? (
                 <View>
-                  <Text m={1} fontSize={16}>
-                    <Text bold={true} fontSize={17}>
-                      Comics
+                  <Text m={1} fontSize={17}>
+                    <Text fontSize={18} bold={true}>
+                      Start year
                     </Text>
-                    : {character.numOfComics}
+                    : {seriesSingle.startYear}
                   </Text>
                   <Divider
                     h={0.5}
@@ -94,13 +93,13 @@ const CharacterDetails = ({navigation, route}) => {
                   />
                 </View>
               ) : null}
-              {character.numOfEvents !== 0 ? (
+              {seriesSingle.endYear != null ? (
                 <View>
-                  <Text m={1} fontSize={16}>
-                    <Text bold={true} fontSize={17}>
-                      Events
+                  <Text m={1} fontSize={17}>
+                    <Text fontSize={18} bold={true}>
+                      End year
                     </Text>
-                    : {character.numOfEvents}
+                    : {seriesSingle.endYear}
                   </Text>
                   <Divider
                     h={0.5}
@@ -109,13 +108,13 @@ const CharacterDetails = ({navigation, route}) => {
                   />
                 </View>
               ) : null}
-              {character.numOfStories !== 0 ? (
+              {seriesSingle.type != null ? (
                 <View>
-                  <Text m={1} fontSize={16}>
-                    <Text bold={true} fontSize={17}>
-                      Stories
+                  <Text m={1} fontSize={17}>
+                    <Text fontSize={18} bold={true}>
+                      Type
                     </Text>
-                    : {character.numOfStories}
+                    : {seriesSingle.type}
                   </Text>
                   <Divider
                     h={0.5}
@@ -124,13 +123,13 @@ const CharacterDetails = ({navigation, route}) => {
                   />
                 </View>
               ) : null}
-              {character.numOfSeries !== 0 ? (
+              {seriesSingle.rating != null ? (
                 <View>
-                  <Text m={1} fontSize={16}>
-                    <Text bold={true} fontSize={17}>
-                      Series
+                  <Text m={1} fontSize={17}>
+                    <Text fontSize={18} bold={true}>
+                      Rating
                     </Text>
-                    : {character.numOfSeries}
+                    : {seriesSingle.rating}
                   </Text>
                   <Divider
                     h={0.5}
@@ -141,13 +140,15 @@ const CharacterDetails = ({navigation, route}) => {
               ) : null}
             </VStack>
           </HStack>
+
           <Text m={1} mt={3} fontSize={15}>
-            {character.description}
+            {seriesSingle.description}
           </Text>
-          {character.numOfComics !== 0 ||
-          character.numOfEvents !== 0 ||
-          character.numOfStories !== 0 ||
-          character.numOfSeries !== 0 ? (
+
+          {seriesSingle.charactersAvailable !== 0 ||
+          seriesSingle.storiesAvailable !== 0 ||
+          seriesSingle.comicsAvailable !== 0 ||
+          seriesSingle.eventsAvailable !== 0 ? (
             <View>
               <Divider
                 mt={3}
@@ -156,7 +157,40 @@ const CharacterDetails = ({navigation, route}) => {
                 backgroundColor="red.800"
               />
               <HStack justifyContent="center" alignItems="center">
-                {character.numOfComics !== 0 ? (
+                {seriesSingle.charactersAvailable !== 0 ? (
+                  <VStack mx={2}>
+                    <IconButton
+                      alignSelf="center"
+                      mt={3}
+                      variant="solid"
+                      backgroundColor="red.800"
+                      borderRadius="full"
+                      size="lg"
+                      onPress={() =>
+                        navigation.navigate('Root', {
+                          screen: 'Characters',
+                          params: {
+                            id: seriesSingle.id,
+                            name: seriesSingle.title,
+                            type: 'series',
+                          },
+                        })
+                      }
+                      icon={
+                        <Icon
+                          color="white"
+                          as={MaterialIcons}
+                          name="person"
+                          size="sm"
+                        />
+                      }
+                    />
+                    <Text textAlign="center" fontSize={14}>
+                      Characters
+                    </Text>
+                  </VStack>
+                ) : null}
+                {seriesSingle.comicsAvailable !== null ? (
                   <VStack mx={2}>
                     <IconButton
                       alignSelf="center"
@@ -169,9 +203,9 @@ const CharacterDetails = ({navigation, route}) => {
                         navigation.navigate('Root', {
                           screen: 'Comics',
                           params: {
-                            id: character.id,
-                            name: character.name,
-                            type: 'characters',
+                            id: seriesSingle.id,
+                            name: seriesSingle.title,
+                            type: 'series',
                           },
                         })
                       }
@@ -189,40 +223,7 @@ const CharacterDetails = ({navigation, route}) => {
                     </Text>
                   </VStack>
                 ) : null}
-                {character.numOfSeries !== 0 ? (
-                  <VStack mx={2}>
-                    <IconButton
-                      alignSelf="center"
-                      mt={3}
-                      variant="solid"
-                      backgroundColor="red.800"
-                      borderRadius="full"
-                      size="lg"
-                      onPress={() =>
-                        navigation.navigate('Root', {
-                          screen: 'Series',
-                          params: {
-                            id: character.id,
-                            name: character.name,
-                            type: 'characters',
-                          },
-                        })
-                      }
-                      icon={
-                        <Icon
-                          color="white"
-                          as={MaterialIcons}
-                          name="collections-bookmark"
-                          size="sm"
-                        />
-                      }
-                    />
-                    <Text textAlign="center" fontSize={14}>
-                      Series
-                    </Text>
-                  </VStack>
-                ) : null}
-                {character.numOfEvents !== 0 ? (
+                {seriesSingle.eventsAvailable !== 0 ? (
                   <VStack mx={2}>
                     <IconButton
                       alignSelf="center"
@@ -251,7 +252,7 @@ const CharacterDetails = ({navigation, route}) => {
                     </Text>
                   </VStack>
                 ) : null}
-                {character.numOfStories !== 0 ? (
+                {seriesSingle.storiesAvailable !== 0 ? (
                   <VStack mx={2}>
                     <IconButton
                       alignSelf="center"
@@ -285,27 +286,51 @@ const CharacterDetails = ({navigation, route}) => {
                 <Text mb={-2} fontSize={11} bold={true}>
                   Hint:
                 </Text>{' '}
-                pressing the buttons above will bring up this characters
-                specified item/s.
+                pressing the buttons above will bring up this series specified
+                item/s.
               </Text>
+            </View>
+          ) : null}
+          {seriesSingle.creators.length > 0 ? (
+            <View>
               <Divider
                 mt={3}
                 h={1}
                 borderRadius={50}
                 backgroundColor="red.800"
               />
+              <VStack m={1} mt={3}>
+                <Text
+                  textAlign="center"
+                  mb={3}
+                  key={-1}
+                  bold={true}
+                  fontSize={18}>
+                  Creators
+                </Text>
+                {seriesSingle.creators.map((creator, index) => {
+                  return (
+                    <PureCreatorItemView
+                      key={index}
+                      navigation={navigation}
+                      item={creator}
+                      origin="comics"
+                    />
+                  );
+                })}
+              </VStack>
             </View>
           ) : null}
         </VStack>
       ) : (
         <Center>
           <Spinner
-            accessibilityLabel="Loading character"
+            accessibilityLabel="Loading series"
             color="red.800"
             size="lg"
           />
           <Heading color="red.800" fontSize="lg">
-            Loading character
+            Loading series
           </Heading>
         </Center>
       )}
@@ -313,4 +338,4 @@ const CharacterDetails = ({navigation, route}) => {
   );
 };
 
-export default CharacterDetails;
+export default ComicDetails;

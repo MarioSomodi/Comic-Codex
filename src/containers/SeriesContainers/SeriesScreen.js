@@ -4,31 +4,31 @@ import debounce from 'lodash.debounce';
 import {View, Input, Icon} from 'native-base';
 import {useRoute, useFocusEffect} from '@react-navigation/native';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
-import ComicVM from '../../components/ComicComponents/ComicVM';
-import ComicsList from '../../components/ComicComponents/ComicsList';
-import ComicsSearchList from '../../components/ComicComponents/ComicsSearchList';
-import ComicsOfItemList from '../../components/ComicComponents/ComicsOfItemList';
+import SeriesVM from '../../components/SeriesComponents/SeriesVM';
+import SeriesList from '../../components/SeriesComponents/SeriesList';
+import SeriesSearchList from '../../components/SeriesComponents/SeriesSearchList';
+import SeriesOfItemList from '../../components/SeriesComponents/SeriesOfItemList';
 
-const ComicsScreen = ({navigation}) => {
+const SeriesScreen = ({navigation}) => {
   const route = useRoute();
 
-  const [itemComicsView, setItemComicsView] = useState(false);
+  const [itemSeriesView, setItemSeriesView] = useState(false);
   const [searchTrigger, setSearchTrigger] = useState(false);
   const [searchValue, setSearchValue] = useState({value: '', newSearch: true});
   const [itemInfo, setItemInfo] = useState(null);
-  const [currentComic, setCurrentComic] = useState(null);
+  const [currentSeries, setCurrentSeries] = useState(null);
 
   const bottomSheetRef = useRef(null);
 
   const snapPoints = useMemo(() => ['0%', '43%'], []);
 
-  const handleComicInfoSheetClose = () => {
+  const handleSeriesInfoSheetClose = () => {
     bottomSheetRef.current.close();
   };
 
-  const handleComicInfoSheetOpen = comic => {
+  const handleSeriesInfoSheetOpen = series => {
     bottomSheetRef.current.expand();
-    setCurrentComic(comic);
+    setCurrentSeries(series);
   };
 
   const handleSearch = value => {
@@ -36,20 +36,19 @@ const ComicsScreen = ({navigation}) => {
     setSearchTrigger(true);
   };
 
+  const debounceOnChange = debounce(handleSearch, 1000);
+
   useFocusEffect(
     React.useCallback(() => {
       return () => bottomSheetRef.current?.close();
     }, []),
   );
 
-  const debounceOnChange = debounce(handleSearch, 1000);
-
   useEffect(() => {
     if (route.params !== undefined) {
       switch (route.params.type) {
-        case 'creators':
-        case 'series':
-        case 'characters': {
+        case 'characters':
+        case 'creators': {
           setItemInfo({
             id: route.params.id,
             name: route.params.name,
@@ -61,19 +60,18 @@ const ComicsScreen = ({navigation}) => {
           break;
         }
       }
-      setItemComicsView(true);
+      setItemSeriesView(true);
     } else {
-      setItemComicsView(false);
+      setItemSeriesView(false);
     }
-    handleComicInfoSheetClose();
   }, [route]);
 
   return (
     <View flex={1}>
-      {!itemComicsView ? (
+      {!itemSeriesView ? (
         <Input
           flex={0}
-          placeholder="Search comics"
+          placeholder="Search series"
           backgroundColor="transparent"
           width="100%"
           py="3"
@@ -98,24 +96,24 @@ const ComicsScreen = ({navigation}) => {
         />
       ) : null}
       <View flex={1} justifyContent="center">
-        {itemComicsView ? (
-          <ComicsOfItemList
-            handleComicInfoSheetOpen={handleComicInfoSheetOpen}
+        {itemSeriesView ? (
+          <SeriesOfItemList
+            handleSeriesInfoSheetOpen={handleSeriesInfoSheetOpen}
             itemInfo={itemInfo}
             navigation={navigation}
-            setItemComicsView={setItemComicsView}
+            setItemSeriesView={setItemSeriesView}
           />
         ) : searchTrigger ? (
-          <ComicsSearchList
-            handleComicInfoSheetOpen={handleComicInfoSheetOpen}
+          <SeriesSearchList
+            handleSeriesInfoSheetOpen={handleSeriesInfoSheetOpen}
             setSearchTrigger={setSearchTrigger}
             searchValue={searchValue}
             setSearchValue={setSearchValue}
           />
         ) : (
-          <ComicsList
+          <SeriesList
             navigation={navigation}
-            handleComicInfoSheetOpen={handleComicInfoSheetOpen}
+            handleSeriesInfoSheetOpen={handleSeriesInfoSheetOpen}
           />
         )}
         <BottomSheet
@@ -123,12 +121,12 @@ const ComicsScreen = ({navigation}) => {
           index={0}
           handleComponent={null}
           snapPoints={snapPoints}>
-          {currentComic && (
+          {currentSeries && (
             <BottomSheetScrollView>
-              <ComicVM
+              <SeriesVM
                 navigation={navigation}
-                comic={currentComic}
-                handleComicInfoSheetClose={handleComicInfoSheetClose}
+                series={currentSeries}
+                handleSeriesInfoSheetClose={handleSeriesInfoSheetClose}
               />
             </BottomSheetScrollView>
           )}
@@ -138,4 +136,4 @@ const ComicsScreen = ({navigation}) => {
   );
 };
 
-export default ComicsScreen;
+export default SeriesScreen;

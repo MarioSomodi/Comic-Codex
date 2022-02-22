@@ -68,7 +68,12 @@ const getComicFromApi = async id => {
     });
     comic = formatResultToComic(response.data.data.results[0]);
   } catch (error) {
-    console.log({response: response, exception: error});
+    console.log({
+      response: response,
+      exception: error,
+      authString: authString,
+      calledRoute: 'comics/' + id + authString,
+    });
   }
   return comic;
 };

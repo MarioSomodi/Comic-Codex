@@ -1,26 +1,25 @@
 import React, {useEffect, useState, useRef, useMemo} from 'react';
 import debounce from 'lodash.debounce';
-import {useRoute} from '@react-navigation/native';
+import {useRoute, useFocusEffect} from '@react-navigation/native';
 import {Icon, View, Input} from 'native-base';
 import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CharacterVM from '../../components/CharacterComponents/CharacterVM';
 import CharacterList from '../../components/CharacterComponents/CharacterList';
 import CharacterSearchList from '../../components/CharacterComponents/CharacterSearchList';
-import CharactersOfComicList from '../../components/CharacterComponents/CharactersOfComicList';
+import CharactersOfItemList from '../../components/CharacterComponents/CharactersOfItemList';
 
 const CharactersScreen = ({navigation}) => {
   const route = useRoute();
-
-  const [comicsCharactersView, setComicsCharactersView] = useState(false);
+  const [itemCharactersView, setItemCharactersView] = useState(false);
   const [currentCharacter, setCurrentCharacter] = useState(null);
-  const [comicInfo, setComicInfo] = useState(null);
+  const [itemInfo, setItemInfo] = useState(null);
   const [searchValue, setSearchValue] = useState({value: '', newSearch: true});
   const [searchTrigger, setSearchTrigger] = useState(false);
 
   const bottomSheetRef = useRef(null);
 
-  const snapPoints = useMemo(() => ['43%'], []);
+  const snapPoints = useMemo(() => ['0%', '43%'], []);
 
   const handleCharacterInfoSheetClose = () => {
     bottomSheetRef.current.close();
@@ -36,20 +35,39 @@ const CharactersScreen = ({navigation}) => {
     setSearchTrigger(true);
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => bottomSheetRef.current?.close();
+    }, []),
+  );
+
   const debounceOnChange = debounce(handleSearch, 1000);
 
   useEffect(() => {
     if (route.params !== undefined) {
-      setComicInfo({id: route.params.id, title: route.params.title});
-      setComicsCharactersView(true);
+      switch (route.params.type) {
+        case 'series':
+        case 'comics': {
+          setItemInfo({
+            id: route.params.id,
+            name: route.params.name,
+            type: route.params.type,
+          });
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+      setItemCharactersView(true);
     } else {
-      setComicsCharactersView(false);
+      setItemCharactersView(false);
     }
   }, [route]);
 
   return (
     <View flex={1}>
-      {!comicsCharactersView ? (
+      {!itemCharactersView ? (
         <Input
           flex={0}
           placeholder="Search characters"
@@ -77,11 +95,11 @@ const CharactersScreen = ({navigation}) => {
         />
       ) : null}
       <View flex={1} justifyContent="center">
-        {comicsCharactersView ? (
-          <CharactersOfComicList
+        {itemCharactersView ? (
+          <CharactersOfItemList
             handleCharacterInfoSheetOpen={handleCharacterInfoSheetOpen}
-            comicInfo={comicInfo}
-            setComicsCharactersView={setComicsCharactersView}
+            itemInfo={itemInfo}
+            setItemCharactersView={setItemCharactersView}
             navigation={navigation}
           />
         ) : searchTrigger ? (
@@ -100,7 +118,7 @@ const CharactersScreen = ({navigation}) => {
         <BottomSheet
           animateOnMount={true}
           ref={bottomSheetRef}
-          index={-1}
+          index={0}
           handleComponent={null}
           snapPoints={snapPoints}>
           {currentCharacter && (

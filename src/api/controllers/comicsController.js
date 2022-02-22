@@ -16,4 +16,4 @@ const GetComicsCharacters = async (limit, offset, id) => {
   return await getComicsCharactersFromApi(limit, offset, id);
 };
 
-export {GetComics, GetComicsCharacters};
+export {GetComics, GetComicsCharacters, GetComic};

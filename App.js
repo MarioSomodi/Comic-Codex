@@ -7,10 +7,10 @@ import LoginScreen from './src/containers/AuthContainers/LoginScreen';
 import RegisterScreen from './src/containers/AuthContainers/RegisterScreen';
 import AppBar from './src/components/AppBar';
 import MyDrawer from './src/components/Drawer';
-import {navigationRef} from './src/components/RootNavigation';
 import ComicDetails from './src/containers/ComicContainers/ComicDetails';
 import CharacterDetails from './src/containers/CharacterContainers/CharacterDetails';
 import CreatorDetails from './src/containers/CreatorContainers/CreatorDetails';
+import SeriesDetails from './src/containers/SeriesContainers/SeriesDetails';
 
 const theme = extendTheme({
   fontConfig: {
@@ -48,7 +48,7 @@ const App = () => {
   }
 
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer>
       <NativeBaseProvider theme={theme}>
         {user ? (
           <Stack.Navigator
@@ -84,6 +84,14 @@ const App = () => {
                 <>
                   <AppBar {...props} user={user} />
                   <CreatorDetails {...props} user={user} />
+                </>
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="SeriesDetails">
+              {props => (
+                <>
+                  <AppBar {...props} user={user} />
+                  <SeriesDetails {...props} user={user} />
                 </>
               )}
             </Stack.Screen>
