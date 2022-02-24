@@ -40,7 +40,7 @@ const SeriesScreen = ({navigation}) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      return () => bottomSheetRef.current?.close();
+      return () => bottomSheetRef.current.close();
     }, []),
   );
 
@@ -48,6 +48,7 @@ const SeriesScreen = ({navigation}) => {
     if (route.params !== undefined) {
       switch (route.params.type) {
         case 'characters':
+        case 'events':
         case 'creators': {
           setItemInfo({
             id: route.params.id,

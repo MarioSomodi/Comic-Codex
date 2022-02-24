@@ -9,6 +9,7 @@ import ComicsScreen from '../containers/ComicContainers/ComicsScreen';
 import CharactersScreen from '../containers/CharacterContainers/CharactersScreen';
 import CreatorsScreen from '../containers/CreatorContainers/CreatorsScreen';
 import SeriesScreen from '../containers/SeriesContainers/SeriesScreen';
+import EventsScreen from '../containers/EventContainers/EventsScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -22,6 +23,8 @@ const getIcon = screenName => {
       return 'edit';
     case 'Series':
       return 'collections-bookmark';
+    case 'Events':
+      return 'event';
     default:
       return undefined;
   }
@@ -100,6 +103,9 @@ const MyDrawer = ({user}) => {
         </Drawer.Screen>
         <Drawer.Screen name="Series">
           {props => <SeriesScreen {...props} user={user} />}
+        </Drawer.Screen>
+        <Drawer.Screen name="Events">
+          {props => <EventsScreen {...props} user={user} />}
         </Drawer.Screen>
       </Drawer.Navigator>
     </Box>

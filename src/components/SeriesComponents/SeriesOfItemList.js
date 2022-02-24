@@ -16,6 +16,7 @@ import {isPortrait} from '../../utilites/screenOrientation';
 import PureSeriesItemView from './PureSeriesItemView';
 import {GetCharactersSeries} from '../../api/controllers/charactersController';
 import {GetCreatorsSeries} from '../../api/controllers/creatorController';
+import {GetEventsSeries} from '../../api/controllers/eventController';
 
 const SeriesOfItemList = ({
   handleSeriesInfoSheetOpen,
@@ -44,6 +45,14 @@ const SeriesOfItemList = ({
       }
       case 'creators': {
         response = await GetCreatorsSeries(
+          99,
+          first ? 0 : offsetAndLoading.offsetNum,
+          itemInfo.id,
+        );
+        break;
+      }
+      case 'events': {
+        response = await GetEventsSeries(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
@@ -137,14 +146,14 @@ const SeriesOfItemList = ({
         });
         break;
       }
-      //   case 'series': {
-      //     navigation.navigate('Root', {screen: 'Series'});
-      //     navigation.navigate('SeriesDetails', {
-      //       loadFromId: itemInfo.id,
-      //       load: true,
-      //     });
-      //     break;
-      //   }
+      case 'events': {
+        navigation.navigate('Root', {screen: 'Events'});
+        navigation.navigate('EventDetails', {
+          loadFromId: itemInfo.id,
+          load: true,
+        });
+        break;
+      }
       default: {
         break;
       }

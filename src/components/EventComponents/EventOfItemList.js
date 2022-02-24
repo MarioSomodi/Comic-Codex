@@ -1,30 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, useState, useEffect} from 'react';
+import {Dimensions} from 'react-native';
 import {
   FlatList,
   View,
   Center,
   Spinner,
   Heading,
-  HStack,
   Text,
+  HStack,
   IconButton,
 } from 'native-base';
-import {Dimensions} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {isPortrait} from '../../utilites/screenOrientation';
-import PureCharacterItemView from './PureCharacterItemView';
-import {GetComicsCharacters} from '../../api/controllers/comicsController';
-import {GetSeriesCharacters} from '../../api/controllers/seriesController';
-import {GetEventsCharacters} from '../../api/controllers/eventController';
+import PureEventItemView from './PureEventItemView';
+import {GetCharactersEvents} from '../../api/controllers/charactersController';
+import {GetCreatorsEvents} from '../../api/controllers/creatorController';
+import {GetSeriesEvents} from '../../api/controllers/seriesController';
+import {GetComicsEvents} from '../../api/controllers/comicsController';
 
-const CharactersOfItemList = ({
-  handleCharacterInfoSheetOpen,
+const EventsOfItemList = ({
+  handleEventInfoSheetOpen,
   itemInfo,
-  setItemCharactersView,
+  setItemEventsView,
   navigation,
 }) => {
-  const [itemCharacters, setItemCharacters] = useState([]);
+  const [itemEvents, setItemEvents] = useState([]);
   const [screenOrientation, setScreenOrientation] = useState(null);
   const [endOfResults, setEndOfResults] = useState(true);
   const [offsetAndLoading, setOffsetAndLoad] = useState({
@@ -32,15 +33,27 @@ const CharactersOfItemList = ({
     loading: false,
   });
 
-  Dimensions.addEventListener('change', () => {
-    setScreenOrientation(isPortrait() ? 'portrait' : 'landscape');
-  });
-
-  const fetchItemsCharacters = async first => {
-    var response = null;
+  const fetchItemEvents = async first => {
+    var response;
     switch (itemInfo.type) {
+      case 'characters': {
+        response = await GetCharactersEvents(
+          99,
+          first ? 0 : offsetAndLoading.offsetNum,
+          itemInfo.id,
+        );
+        break;
+      }
+      case 'creators': {
+        response = await GetCreatorsEvents(
+          99,
+          first ? 0 : offsetAndLoading.offsetNum,
+          itemInfo.id,
+        );
+        break;
+      }
       case 'comics': {
-        response = await GetComicsCharacters(
+        response = await GetComicsEvents(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
@@ -48,15 +61,7 @@ const CharactersOfItemList = ({
         break;
       }
       case 'series': {
-        response = await GetSeriesCharacters(
-          99,
-          first ? 0 : offsetAndLoading.offsetNum,
-          itemInfo.id,
-        );
-        break;
-      }
-      case 'events': {
-        response = await GetEventsCharacters(
+        response = await GetSeriesEvents(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
@@ -75,11 +80,15 @@ const CharactersOfItemList = ({
       } else {
         setEndOfResults(false);
       }
-      setItemCharacters(prevItemCharacters =>
-        first ? response : [...prevItemCharacters, ...response],
+      setItemEvents(prevItemEvents =>
+        first ? response : [...prevItemEvents, ...response],
       );
     }
   };
+
+  Dimensions.addEventListener('change', () => {
+    setScreenOrientation(isPortrait() ? 'portrait' : 'landscape');
+  });
 
   const getItemLayout = useCallback(
     (data, index) => ({
@@ -92,14 +101,14 @@ const CharactersOfItemList = ({
 
   const renderItem = useCallback(({item}) => {
     return (
-      <PureCharacterItemView
-        handleCharacterInfoSheetOpen={handleCharacterInfoSheetOpen}
+      <PureEventItemView
+        handleEventInfoSheetOpen={handleEventInfoSheetOpen}
         item={item}
       />
     );
   }, []);
 
-  const renderFooterComic = () => {
+  const renderFooterChar = () => {
     if (!offsetAndLoading.loading) {
       return null;
     }
@@ -119,25 +128,27 @@ const CharactersOfItemList = ({
     );
   };
 
-  const handleLoadMoreItemCharacters = () => {
+  const handleLoadMoreItemSeries = () => {
     setOffsetAndLoad(prevObj => {
       return {offsetNum: prevObj.offsetNum + 99, loading: true};
     });
   };
 
+  const keyExtractor = useCallback(item => item.id, []);
+
   const goBackToItemsScreen = () => {
-    setItemCharactersView(false);
+    setItemEventsView(false);
     switch (itemInfo.type) {
-      case 'comics': {
-        navigation.navigate('Root', {screen: 'Comics'});
-        navigation.navigate('ComicDetails', {
+      case 'characters': {
+        navigation.navigate('Root', {screen: 'Characters'});
+        navigation.navigate('CharacterDetails', {
           loadFromId: itemInfo.id,
           load: true,
         });
         break;
       }
       case 'creators': {
-        navigation.navigate('Root', {screen: 'Characters'});
+        navigation.navigate('Root', {screen: 'Creators'});
         navigation.navigate('CreatorDetails', {
           loadFromId: itemInfo.id,
           load: true,
@@ -152,9 +163,9 @@ const CharactersOfItemList = ({
         });
         break;
       }
-      case 'events': {
-        navigation.navigate('Root', {screen: 'Events'});
-        navigation.navigate('EventDetails', {
+      case 'comics': {
+        navigation.navigate('Root', {screen: 'Comics'});
+        navigation.navigate('ComicDetails', {
           loadFromId: itemInfo.id,
           load: true,
         });
@@ -166,37 +177,35 @@ const CharactersOfItemList = ({
     }
   };
 
-  const keyExtractor = useCallback(item => item.id, []);
-
   useEffect(() => {
     setScreenOrientation(isPortrait() ? 'portrait' : 'landscape');
   }, []);
 
   useEffect(() => {
     if (itemInfo !== null) {
-      setItemCharacters([]);
+      setItemEvents([]);
       setOffsetAndLoad({
         offsetNum: 0,
         loading: true,
       });
       setEndOfResults(false);
-      fetchItemsCharacters(true);
+      fetchItemEvents(true);
     }
   }, [itemInfo]);
 
   useEffect(() => {
     if (!endOfResults && offsetAndLoading.offsetNum !== 0) {
-      fetchItemsCharacters(false);
+      fetchItemEvents(false);
     }
   }, [offsetAndLoading.offsetNum]);
 
   return (
     <View flex={1}>
-      {itemCharacters.length > 0 && itemCharacters[0] !== 'false' ? (
+      {itemEvents.length > 0 && itemEvents[0] !== 'false' ? (
         <View flex={1}>
           <HStack alignItems="center" justifyContent="space-between">
             <Text m={1} flex={1} fontSize={17}>
-              Characters of{' '}
+              Events of{' '}
               {itemInfo.type !== 'series'
                 ? itemInfo.type.substring(0, itemInfo.type.length - 1)
                 : itemInfo.type}
@@ -225,11 +234,11 @@ const CharactersOfItemList = ({
           </HStack>
           <FlatList
             getItemLayout={getItemLayout}
-            onEndReached={handleLoadMoreItemCharacters}
+            onEndReached={handleLoadMoreItemSeries}
             onEndReachedThreshold={0.5}
             m={1}
-            data={itemCharacters}
-            ListFooterComponent={renderFooterComic}
+            data={itemEvents}
+            ListFooterComponent={renderFooterChar}
             renderItem={renderItem}
             numColumns={screenOrientation === 'landscape' ? 6 : 3}
             keyExtractor={keyExtractor}
@@ -240,12 +249,12 @@ const CharactersOfItemList = ({
         <Center flex={1}>
           <View>
             <Spinner
-              accessibilityLabel="Loading characters"
+              accessibilityLabel="Loading series"
               color="red.800"
               size="lg"
             />
             <Heading color="red.800" fontSize="lg">
-              Loading {itemInfo.type} characters
+              Loading {itemInfo.type} events
             </Heading>
           </View>
         </Center>
@@ -254,4 +263,4 @@ const CharactersOfItemList = ({
   );
 };
 
-export default CharactersOfItemList;
+export default EventsOfItemList;

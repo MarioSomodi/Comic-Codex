@@ -3,6 +3,7 @@ import Creator from '../../models/creator';
 import {marvelApi, getApiAuthString} from '../apiConfig';
 import {formatResultToComic} from '../services/comicService';
 import {formatResultToCharacter} from '../services/charactersService';
+import {formatResultToEvent} from './eventService';
 
 const formatResultToSeries = result => {
   var description =
@@ -155,10 +156,40 @@ const getSeriesCharactersFromApi = async (limit, offset, id) => {
   return seriesCharacters;
 };
 
+const getSeriesEventsFromApi = async (limit, offset, id) => {
+  var seriesEvents = [];
+  if (limit === null) {
+    limit = 99;
+  }
+  var paramsObj = {
+    limit: limit,
+    orderBy: '-modified',
+    offset: offset,
+  };
+  var authString = await getApiAuthString();
+  var response = null;
+  try {
+    response = await marvelApi.get('series/' + id + '/events' + authString, {
+      params: paramsObj,
+    });
+    if (response.data.data.count === 0) {
+      seriesEvents.push('false');
+      return seriesEvents;
+    }
+    response.data.data.results.forEach(result => {
+      seriesEvents.push(formatResultToEvent(result));
+    });
+  } catch (error) {
+    console.log({response: response, exception: error});
+  }
+  return seriesEvents;
+};
+
 export {
   getSeriesFromApi,
   formatResultToSeries,
   getSeriesSingleFromApi,
   getSeriesComicsFromApi,
   getSeriesCharactersFromApi,
+  getSeriesEventsFromApi,
 };

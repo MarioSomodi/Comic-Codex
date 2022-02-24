@@ -11,6 +11,7 @@ import ComicDetails from './src/containers/ComicContainers/ComicDetails';
 import CharacterDetails from './src/containers/CharacterContainers/CharacterDetails';
 import CreatorDetails from './src/containers/CreatorContainers/CreatorDetails';
 import SeriesDetails from './src/containers/SeriesContainers/SeriesDetails';
+import EventDetails from './src/containers/EventContainers/EventDetails';
 
 const theme = extendTheme({
   fontConfig: {
@@ -92,6 +93,14 @@ const App = () => {
                 <>
                   <AppBar {...props} user={user} />
                   <SeriesDetails {...props} user={user} />
+                </>
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="EventDetails">
+              {props => (
+                <>
+                  <AppBar {...props} user={user} />
+                  <EventDetails {...props} user={user} />
                 </>
               )}
             </Stack.Screen>

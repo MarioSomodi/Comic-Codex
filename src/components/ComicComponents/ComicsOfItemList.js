@@ -17,6 +17,7 @@ import PureComicItemView from './PureComicItemView';
 import {GetCharactersComics} from '../../api/controllers/charactersController';
 import {GetCreatorsComics} from '../../api/controllers/creatorController';
 import {GetSeriesComics} from '../../api/controllers/seriesController';
+import {GetEventsComics} from '../../api/controllers/eventController';
 
 const ComicsOfItemList = ({
   handleComicInfoSheetOpen,
@@ -53,6 +54,14 @@ const ComicsOfItemList = ({
       }
       case 'series': {
         response = await GetSeriesComics(
+          99,
+          first ? 0 : offsetAndLoading.offsetNum,
+          itemInfo.id,
+        );
+        break;
+      }
+      case 'events': {
+        response = await GetEventsComics(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
@@ -149,6 +158,14 @@ const ComicsOfItemList = ({
       case 'series': {
         navigation.navigate('Root', {screen: 'Series'});
         navigation.navigate('SeriesDetails', {
+          loadFromId: itemInfo.id,
+          load: true,
+        });
+        break;
+      }
+      case 'events': {
+        navigation.navigate('Root', {screen: 'Events'});
+        navigation.navigate('EventDetails', {
           loadFromId: itemInfo.id,
           load: true,
         });

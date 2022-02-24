@@ -38,7 +38,7 @@ const ComicsScreen = ({navigation}) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      return () => bottomSheetRef.current?.close();
+      return () => bottomSheetRef.current.close();
     }, []),
   );
 
@@ -49,6 +49,7 @@ const ComicsScreen = ({navigation}) => {
       switch (route.params.type) {
         case 'creators':
         case 'series':
+        case 'events':
         case 'characters': {
           setItemInfo({
             id: route.params.id,

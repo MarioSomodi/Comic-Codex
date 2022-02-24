@@ -1,33 +1,36 @@
 import React, {useEffect, useState, useRef, useMemo} from 'react';
-import debounce from 'lodash.debounce';
-import {useRoute, useFocusEffect} from '@react-navigation/native';
-import {Icon, View, Input} from 'native-base';
-import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import CharacterVM from '../../components/CharacterComponents/CharacterVM';
-import CharacterList from '../../components/CharacterComponents/CharacterList';
-import CharacterSearchList from '../../components/CharacterComponents/CharacterSearchList';
-import CharactersOfItemList from '../../components/CharacterComponents/CharactersOfItemList';
+import debounce from 'lodash.debounce';
+import {View, Input, Icon, Heading} from 'native-base';
+import {useRoute, useFocusEffect} from '@react-navigation/native';
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import EventVM from '../../components/EventComponents/EventVM';
+import EventList from '../../components/EventComponents/EventList';
+import EventSearchList from '../../components/EventComponents/EventSearchList';
+import EventsOfItemList from '../../components/EventComponents/EventOfItemList';
+// import EventSearchList from '../../components/EventComponents/EventSearchList';
+// import EventOfItemList from '../../components/EventComponents/EventOfItemList';
 
-const CharactersScreen = ({navigation}) => {
+const EventsScreen = ({navigation}) => {
   const route = useRoute();
-  const [itemCharactersView, setItemCharactersView] = useState(false);
-  const [currentCharacter, setCurrentCharacter] = useState(null);
-  const [itemInfo, setItemInfo] = useState(null);
-  const [searchValue, setSearchValue] = useState({value: '', newSearch: true});
+
+  const [itemEventsView, setItemEventsView] = useState(false);
   const [searchTrigger, setSearchTrigger] = useState(false);
+  const [searchValue, setSearchValue] = useState({value: '', newSearch: true});
+  const [itemInfo, setItemInfo] = useState(null);
+  const [currentEvent, setCurrentEvent] = useState(null);
 
   const bottomSheetRef = useRef(null);
 
   const snapPoints = useMemo(() => ['0%', '43%'], []);
 
-  const handleCharacterInfoSheetClose = () => {
+  const handleEventInfoSheetClose = () => {
     bottomSheetRef.current.close();
   };
 
-  const handleCharacterInfoSheetOpen = character => {
+  const handleEventInfoSheetOpen = event => {
     bottomSheetRef.current.expand();
-    setCurrentCharacter(character);
+    setCurrentEvent(event);
   };
 
   const handleSearch = value => {
@@ -35,20 +38,21 @@ const CharactersScreen = ({navigation}) => {
     setSearchTrigger(true);
   };
 
+  const debounceOnChange = debounce(handleSearch, 1000);
+
   useFocusEffect(
     React.useCallback(() => {
       return () => bottomSheetRef.current.close();
     }, []),
   );
 
-  const debounceOnChange = debounce(handleSearch, 1000);
-
   useEffect(() => {
     if (route.params !== undefined) {
       switch (route.params.type) {
+        case 'characters':
         case 'series':
-        case 'events':
-        case 'comics': {
+        case 'comics':
+        case 'creators': {
           setItemInfo({
             id: route.params.id,
             name: route.params.name,
@@ -60,18 +64,18 @@ const CharactersScreen = ({navigation}) => {
           break;
         }
       }
-      setItemCharactersView(true);
+      setItemEventsView(true);
     } else {
-      setItemCharactersView(false);
+      setItemEventsView(false);
     }
   }, [route]);
 
   return (
     <View flex={1}>
-      {!itemCharactersView ? (
+      {!itemEventsView ? (
         <Input
           flex={0}
-          placeholder="Search characters"
+          placeholder="Search events"
           backgroundColor="transparent"
           width="100%"
           py="3"
@@ -96,38 +100,37 @@ const CharactersScreen = ({navigation}) => {
         />
       ) : null}
       <View flex={1} justifyContent="center">
-        {itemCharactersView ? (
-          <CharactersOfItemList
-            handleCharacterInfoSheetOpen={handleCharacterInfoSheetOpen}
+        {itemEventsView ? (
+          <EventsOfItemList
+            handleEventInfoSheetOpen={handleEventInfoSheetOpen}
             itemInfo={itemInfo}
-            setItemCharactersView={setItemCharactersView}
             navigation={navigation}
+            setItemEventsView={setItemEventsView}
           />
         ) : searchTrigger ? (
-          <CharacterSearchList
-            handleCharacterInfoSheetOpen={handleCharacterInfoSheetOpen}
+          <EventSearchList
+            handleEventInfoSheetOpen={handleEventInfoSheetOpen}
             setSearchTrigger={setSearchTrigger}
             searchValue={searchValue}
             setSearchValue={setSearchValue}
           />
         ) : (
-          <CharacterList
+          <EventList
             navigation={navigation}
-            handleCharacterInfoSheetOpen={handleCharacterInfoSheetOpen}
+            handleEventInfoSheetOpen={handleEventInfoSheetOpen}
           />
         )}
         <BottomSheet
-          animateOnMount={true}
           ref={bottomSheetRef}
           index={0}
           handleComponent={null}
           snapPoints={snapPoints}>
-          {currentCharacter && (
+          {currentEvent && (
             <BottomSheetScrollView>
-              <CharacterVM
+              <EventVM
                 navigation={navigation}
-                character={currentCharacter}
-                handleCharacterInfoSheetClose={handleCharacterInfoSheetClose}
+                event={currentEvent}
+                handleEventInfoSheetClose={handleEventInfoSheetClose}
               />
             </BottomSheetScrollView>
           )}
@@ -137,4 +140,4 @@ const CharactersScreen = ({navigation}) => {
   );
 };
 
-export default CharactersScreen;
+export default EventsScreen;

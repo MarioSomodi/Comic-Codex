@@ -2,6 +2,7 @@ import {marvelApi, getApiAuthString} from '../apiConfig';
 import Character from '../../models/character';
 import {formatResultToComic} from '../services/comicService';
 import {formatResultToSeries} from '../services/seriesService';
+import {formatResultToEvent} from './eventService';
 
 const formatResultToCharacter = result => {
   var description =
@@ -140,10 +141,43 @@ const getCharactersSeriesFromApi = async (limit, offset, id) => {
   return charactersSeries;
 };
 
+const getCharactersEventsFromApi = async (limit, offset, id) => {
+  var charactersEvents = [];
+  if (limit === null) {
+    limit = 99;
+  }
+  var paramsObj = {
+    limit: limit,
+    orderBy: '-modified',
+    offset: offset,
+  };
+  var authString = await getApiAuthString();
+  var response = null;
+  try {
+    response = await marvelApi.get(
+      'characters/' + id + '/events' + authString,
+      {
+        params: paramsObj,
+      },
+    );
+    if (response.data.data.count === 0) {
+      charactersEvents.push('false');
+      return charactersEvents;
+    }
+    response.data.data.results.forEach(result => {
+      charactersEvents.push(formatResultToEvent(result));
+    });
+  } catch (error) {
+    console.log({response: response, exception: error});
+  }
+  return charactersEvents;
+};
+
 export {
   getCharactersFromApi,
   getCharactersComicsFromApi,
   formatResultToCharacter,
   getCharacterFromApi,
   getCharactersSeriesFromApi,
+  getCharactersEventsFromApi,
 };

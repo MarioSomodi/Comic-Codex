@@ -243,12 +243,16 @@ const ComicDetails = ({route, navigation}) => {
                       backgroundColor="red.800"
                       borderRadius="full"
                       size="lg"
-                      // onPress={() =>
-                      //   navigation.navigate('Root', {
-                      //     screen: 'Characters',
-                      //     params: {id: comic.id, title: comic.title},
-                      //   })
-                      // }
+                      onPress={() =>
+                        navigation.navigate('Root', {
+                          screen: 'Events',
+                          params: {
+                            id: comic.id,
+                            name: comic.name,
+                            type: 'comics',
+                          },
+                        })
+                      }
                       icon={
                         <Icon
                           color="white"

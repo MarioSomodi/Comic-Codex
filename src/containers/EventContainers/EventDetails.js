@@ -17,36 +17,36 @@ import {
 } from 'native-base';
 import placeholderImage from '../../assets/images/Placeholder.png';
 import PureCreatorItemView from '../../components/CreatorComponents/PureCreatorItemView';
-import {GetSeriesSingle} from '../../api/controllers/seriesController';
+import {GetEvent} from '../../api/controllers/eventController';
 
-const ComicDetails = ({route, navigation}) => {
-  const [seriesSingle, setSeriesSingle] = useState(null);
+const EventDetails = ({route, navigation}) => {
+  const [event, setEvent] = useState(null);
 
-  const getSingleSeries = async () => {
-    var response = await GetSeriesSingle(route.params.loadFromId);
-    setSeriesSingle(response);
+  const getEvent = async () => {
+    var response = await GetEvent(route.params.loadFromId);
+    setEvent(response);
   };
 
   useEffect(() => {
-    if (route.params.seriesSingle != null) {
-      setSeriesSingle(route.params.seriesSingle);
+    if (route.params.event != null) {
+      setEvent(route.params.event);
     }
   }, []);
 
   useEffect(() => {
     if (route.params.load === true) {
-      getSingleSeries();
+      getEvent();
     }
   }, [route.params.load]);
 
   return (
     <ScrollView
       contentContainerStyle={{
-        justifyContent: seriesSingle != null ? 'flex-start' : 'center',
+        justifyContent: event != null ? 'flex-start' : 'center',
         flexGrow: 1,
       }}
       p={2}>
-      {seriesSingle != null ? (
+      {event != null ? (
         <VStack mb={10}>
           <HStack justifyContent="center" alignItems="center">
             <Image
@@ -56,14 +56,14 @@ const ComicDetails = ({route, navigation}) => {
               borderRadius="md"
               justifyContent="center"
               alignItems="center"
-              alt={seriesSingle.title}
+              alt={event.title}
               h={225}
               w={150}
-              key={seriesSingle.id}
+              key={event.id}
               source={
-                seriesSingle.thumbnail === true
+                event.thumbnail === true
                   ? placeholderImage
-                  : {uri: seriesSingle.thumbnail}
+                  : {uri: event.thumbnail}
               }
             />
             <Divider
@@ -75,16 +75,16 @@ const ComicDetails = ({route, navigation}) => {
             />
             <VStack flex={1}>
               <Text m={1} bold={true} fontSize={20}>
-                {seriesSingle.title}
+                {event.title}
               </Text>
               <Divider h={0.5} borderRadius={50} backgroundColor="red.800" />
-              {seriesSingle.startYear != null ? (
+              {event.start != 'null' ? (
                 <View>
                   <Text m={1} fontSize={17}>
                     <Text fontSize={18} bold={true}>
-                      Start year
+                      Start
                     </Text>
-                    : {seriesSingle.startYear}
+                    : {event.start}
                   </Text>
                   <Divider
                     h={0.5}
@@ -93,43 +93,13 @@ const ComicDetails = ({route, navigation}) => {
                   />
                 </View>
               ) : null}
-              {seriesSingle.endYear != null ? (
+              {event.end != 'null' ? (
                 <View>
                   <Text m={1} fontSize={17}>
                     <Text fontSize={18} bold={true}>
-                      End year
+                      End
                     </Text>
-                    : {seriesSingle.endYear}
-                  </Text>
-                  <Divider
-                    h={0.5}
-                    borderRadius={50}
-                    backgroundColor="red.800"
-                  />
-                </View>
-              ) : null}
-              {seriesSingle.type != null ? (
-                <View>
-                  <Text m={1} fontSize={17}>
-                    <Text fontSize={18} bold={true}>
-                      Type
-                    </Text>
-                    : {seriesSingle.type}
-                  </Text>
-                  <Divider
-                    h={0.5}
-                    borderRadius={50}
-                    backgroundColor="red.800"
-                  />
-                </View>
-              ) : null}
-              {seriesSingle.rating != null ? (
-                <View>
-                  <Text m={1} fontSize={17}>
-                    <Text fontSize={18} bold={true}>
-                      Rating
-                    </Text>
-                    : {seriesSingle.rating}
+                    : {event.end}
                   </Text>
                   <Divider
                     h={0.5}
@@ -142,13 +112,13 @@ const ComicDetails = ({route, navigation}) => {
           </HStack>
 
           <Text m={1} mt={3} fontSize={15}>
-            {seriesSingle.description}
+            {event.description}
           </Text>
 
-          {seriesSingle.charactersAvailable !== 0 ||
-          seriesSingle.storiesAvailable !== 0 ||
-          seriesSingle.comicsAvailable !== 0 ||
-          seriesSingle.eventsAvailable !== 0 ? (
+          {event.charactersAvailable !== 0 ||
+          event.storiesAvailable !== 0 ||
+          event.comicsAvailable !== 0 ||
+          event.seriesAvailable !== 0 ? (
             <View>
               <Divider
                 mt={3}
@@ -157,7 +127,7 @@ const ComicDetails = ({route, navigation}) => {
                 backgroundColor="red.800"
               />
               <HStack justifyContent="center" alignItems="center">
-                {seriesSingle.charactersAvailable !== 0 ? (
+                {event.charactersAvailable !== 0 ? (
                   <VStack mx={2}>
                     <IconButton
                       alignSelf="center"
@@ -170,9 +140,9 @@ const ComicDetails = ({route, navigation}) => {
                         navigation.navigate('Root', {
                           screen: 'Characters',
                           params: {
-                            id: seriesSingle.id,
-                            name: seriesSingle.title,
-                            type: 'series',
+                            id: event.id,
+                            name: event.title,
+                            type: 'events',
                           },
                         })
                       }
@@ -190,7 +160,7 @@ const ComicDetails = ({route, navigation}) => {
                     </Text>
                   </VStack>
                 ) : null}
-                {seriesSingle.comicsAvailable !== null ? (
+                {event.comicsAvailable !== null ? (
                   <VStack mx={2}>
                     <IconButton
                       alignSelf="center"
@@ -203,9 +173,9 @@ const ComicDetails = ({route, navigation}) => {
                         navigation.navigate('Root', {
                           screen: 'Comics',
                           params: {
-                            id: seriesSingle.id,
-                            name: seriesSingle.title,
-                            type: 'series',
+                            id: event.id,
+                            name: event.title,
+                            type: 'events',
                           },
                         })
                       }
@@ -223,7 +193,7 @@ const ComicDetails = ({route, navigation}) => {
                     </Text>
                   </VStack>
                 ) : null}
-                {seriesSingle.eventsAvailable !== 0 ? (
+                {event.seriesAvailable !== 0 ? (
                   <VStack mx={2}>
                     <IconButton
                       alignSelf="center"
@@ -234,11 +204,11 @@ const ComicDetails = ({route, navigation}) => {
                       size="lg"
                       onPress={() =>
                         navigation.navigate('Root', {
-                          screen: 'Events',
+                          screen: 'Series',
                           params: {
-                            id: seriesSingle.id,
-                            name: seriesSingle.name,
-                            type: 'series',
+                            id: event.id,
+                            name: event.title,
+                            type: 'events',
                           },
                         })
                       }
@@ -246,17 +216,17 @@ const ComicDetails = ({route, navigation}) => {
                         <Icon
                           color="white"
                           as={MaterialIcons}
-                          name="event"
+                          name="collections-bookmark"
                           size="sm"
                         />
                       }
                     />
                     <Text textAlign="center" fontSize={14}>
-                      Events
+                      Series
                     </Text>
                   </VStack>
                 ) : null}
-                {seriesSingle.storiesAvailable !== 0 ? (
+                {event.storiesAvailable !== 0 ? (
                   <VStack mx={2}>
                     <IconButton
                       alignSelf="center"
@@ -290,12 +260,12 @@ const ComicDetails = ({route, navigation}) => {
                 <Text mb={-2} fontSize={11} bold={true}>
                   Hint:
                 </Text>{' '}
-                pressing the buttons above will bring up this series specified
+                pressing the buttons above will bring up this events specified
                 item/s.
               </Text>
             </View>
           ) : null}
-          {seriesSingle.creators.length > 0 ? (
+          {event.creators !== null && event.creators.length > 0 ? (
             <View>
               <Divider
                 mt={3}
@@ -312,7 +282,7 @@ const ComicDetails = ({route, navigation}) => {
                   fontSize={18}>
                   Creators
                 </Text>
-                {seriesSingle.creators.map((creator, index) => {
+                {event.creators.map((creator, index) => {
                   return (
                     <PureCreatorItemView
                       key={index}
@@ -334,7 +304,7 @@ const ComicDetails = ({route, navigation}) => {
             size="lg"
           />
           <Heading color="red.800" fontSize="lg">
-            Loading series
+            Loading events
           </Heading>
         </Center>
       )}
@@ -342,4 +312,4 @@ const ComicDetails = ({route, navigation}) => {
   );
 };
 
-export default ComicDetails;
+export default EventDetails;

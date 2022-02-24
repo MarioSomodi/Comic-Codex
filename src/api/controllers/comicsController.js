@@ -2,6 +2,7 @@ import {
   getComicsFromApi,
   getComicsCharactersFromApi,
   getComicFromApi,
+  getComicsEventsFromApi,
 } from '../services/comicService';
 
 const GetComics = async (limit, offset, searchValue) => {
@@ -16,4 +17,8 @@ const GetComicsCharacters = async (limit, offset, id) => {
   return await getComicsCharactersFromApi(limit, offset, id);
 };
 
-export {GetComics, GetComicsCharacters, GetComic};
+const GetComicsEvents = async (limit, offset, id) => {
+  return await getComicsEventsFromApi(limit, offset, id);
+};
+
+export {GetComics, GetComicsCharacters, GetComic, GetComicsEvents};
