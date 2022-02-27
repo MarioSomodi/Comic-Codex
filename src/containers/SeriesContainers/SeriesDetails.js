@@ -237,7 +237,7 @@ const ComicDetails = ({route, navigation}) => {
                           screen: 'Events',
                           params: {
                             id: seriesSingle.id,
-                            name: seriesSingle.name,
+                            name: seriesSingle.title,
                             type: 'series',
                           },
                         })
@@ -265,12 +265,16 @@ const ComicDetails = ({route, navigation}) => {
                       backgroundColor="red.800"
                       borderRadius="full"
                       size="lg"
-                      // onPress={() =>
-                      //   navigation.navigate('Root', {
-                      //     screen: 'Characters',
-                      //     params: {id: comic.id, title: comic.title},
-                      //   })
-                      // }
+                      onPress={() =>
+                        navigation.navigate('Root', {
+                          screen: 'Stories',
+                          params: {
+                            id: seriesSingle.id,
+                            name: seriesSingle.title,
+                            type: 'series',
+                          },
+                        })
+                      }
                       icon={
                         <Icon
                           color="white"

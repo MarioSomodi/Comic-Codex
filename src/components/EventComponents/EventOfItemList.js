@@ -18,6 +18,7 @@ import {GetCharactersEvents} from '../../api/controllers/charactersController';
 import {GetCreatorsEvents} from '../../api/controllers/creatorController';
 import {GetSeriesEvents} from '../../api/controllers/seriesController';
 import {GetComicsEvents} from '../../api/controllers/comicsController';
+import {GetStoriesEvents} from '../../api/controllers/storiesController';
 
 const EventsOfItemList = ({
   handleEventInfoSheetOpen,
@@ -62,6 +63,14 @@ const EventsOfItemList = ({
       }
       case 'series': {
         response = await GetSeriesEvents(
+          99,
+          first ? 0 : offsetAndLoading.offsetNum,
+          itemInfo.id,
+        );
+        break;
+      }
+      case 'stories': {
+        response = await GetStoriesEvents(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
@@ -166,6 +175,14 @@ const EventsOfItemList = ({
       case 'comics': {
         navigation.navigate('Root', {screen: 'Comics'});
         navigation.navigate('ComicDetails', {
+          loadFromId: itemInfo.id,
+          load: true,
+        });
+        break;
+      }
+      case 'stories': {
+        navigation.navigate('Root', {screen: 'Stories'});
+        navigation.navigate('StoryDetails', {
           loadFromId: itemInfo.id,
           load: true,
         });

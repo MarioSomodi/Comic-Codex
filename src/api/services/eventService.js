@@ -4,6 +4,7 @@ import {marvelApi, getApiAuthString} from '../apiConfig';
 import {formatResultToCharacter} from './charactersService';
 import {formatResultToComic} from './comicService';
 import {formatResultToSeries} from './seriesService';
+import {formatResultToStory} from './storiesService';
 
 const formatResultToEvent = result => {
   var description =
@@ -187,6 +188,35 @@ const getEventsComicsFromApi = async (limit, offset, id) => {
   return eventsComics;
 };
 
+const getEventsStoriesFromApi = async (limit, offset, id) => {
+  var evnetsStories = [];
+  if (limit === null) {
+    limit = 99;
+  }
+  var paramsObj = {
+    limit: limit,
+    orderBy: '-modified',
+    offset: offset,
+  };
+  var authString = await getApiAuthString();
+  var response = null;
+  try {
+    response = await marvelApi.get('events/' + id + '/stories' + authString, {
+      params: paramsObj,
+    });
+    if (response.data.data.count === 0) {
+      evnetsStories.push('false');
+      return evnetsStories;
+    }
+    response.data.data.results.forEach(result => {
+      evnetsStories.push(formatResultToStory(result));
+    });
+  } catch (error) {
+    console.log({response: response, exception: error});
+  }
+  return evnetsStories;
+};
+
 export {
   getEventsFromApi,
   formatResultToEvent,
@@ -194,4 +224,5 @@ export {
   getEventsCharactersFromApi,
   getEventsComicsFromApi,
   getEventsSeriesFromApi,
+  getEventsStoriesFromApi,
 };

@@ -3,6 +3,7 @@ import {marvelApi, getApiAuthString} from '../apiConfig';
 import {formatResultToComic} from '../services/comicService';
 import {formatResultToSeries} from '../services/seriesService';
 import {formatResultToEvent} from './eventService';
+import {formatResultToStory} from './storiesService';
 
 const formatResultToCreator = result => {
   var currentCreator = new Creator(
@@ -151,10 +152,40 @@ const getCreatorsEventsFromApi = async (limit, offset, id) => {
   return creatorsEvents;
 };
 
+const getCreatorsStoriesFromApi = async (limit, offset, id) => {
+  var creatorsStories = [];
+  if (limit === null) {
+    limit = 99;
+  }
+  var paramsObj = {
+    limit: limit,
+    orderBy: '-modified',
+    offset: offset,
+  };
+  var authString = await getApiAuthString();
+  var response = null;
+  try {
+    response = await marvelApi.get('creators/' + id + '/stories' + authString, {
+      params: paramsObj,
+    });
+    if (response.data.data.count === 0) {
+      creatorsStories.push('false');
+      return creatorsStories;
+    }
+    response.data.data.results.forEach(result => {
+      creatorsStories.push(formatResultToStory(result));
+    });
+  } catch (error) {
+    console.log({response: response, exception: error});
+  }
+  return creatorsStories;
+};
+
 export {
   getCreatorsFromApi,
   getCreatorsComicsFromApi,
   getCreatorFromApi,
   getCreatorsSeriesFromApi,
   getCreatorsEventsFromApi,
+  getCreatorsStoriesFromApi,
 };

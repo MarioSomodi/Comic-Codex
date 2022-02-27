@@ -12,6 +12,10 @@ import CharacterDetails from './src/containers/CharacterContainers/CharacterDeta
 import CreatorDetails from './src/containers/CreatorContainers/CreatorDetails';
 import SeriesDetails from './src/containers/SeriesContainers/SeriesDetails';
 import EventDetails from './src/containers/EventContainers/EventDetails';
+import StoryDetails from './src/containers/StoryContainers/StoryDetails';
+import {LogBox} from 'react-native';
+
+LogBox.ignoreLogs(['Warning']);
 
 const theme = extendTheme({
   fontConfig: {
@@ -101,6 +105,14 @@ const App = () => {
                 <>
                   <AppBar {...props} user={user} />
                   <EventDetails {...props} user={user} />
+                </>
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="StoryDetails">
+              {props => (
+                <>
+                  <AppBar {...props} user={user} />
+                  <StoryDetails {...props} user={user} />
                 </>
               )}
             </Stack.Screen>

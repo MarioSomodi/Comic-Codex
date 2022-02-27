@@ -23,7 +23,7 @@ const SeriesScreen = ({navigation}) => {
   const snapPoints = useMemo(() => ['0%', '43%'], []);
 
   const handleSeriesInfoSheetClose = () => {
-    bottomSheetRef.current.close();
+    bottomSheetRef.current.collapse();
   };
 
   const handleSeriesInfoSheetOpen = series => {
@@ -40,7 +40,7 @@ const SeriesScreen = ({navigation}) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      return () => bottomSheetRef.current.close();
+      return () => bottomSheetRef.current.collapse();
     }, []),
   );
 
@@ -49,6 +49,7 @@ const SeriesScreen = ({navigation}) => {
       switch (route.params.type) {
         case 'characters':
         case 'events':
+        case 'stories':
         case 'creators': {
           setItemInfo({
             id: route.params.id,

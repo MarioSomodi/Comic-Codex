@@ -71,13 +71,7 @@ const CreatorsSearchList = ({
   };
 
   const renderItem = useCallback(({item}) => {
-    return (
-      <PureCreatorItemView
-        origin="creators"
-        navigation={navigation}
-        item={item}
-      />
-    );
+    return <PureCreatorItemView navigation={navigation} item={item} />;
   }, []);
 
   const keyExtractor = useCallback(item => item.id, []);

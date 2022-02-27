@@ -4,6 +4,7 @@ import {
   getSeriesComicsFromApi,
   getSeriesCharactersFromApi,
   getSeriesEventsFromApi,
+  getSeriesStoriesFromApi,
 } from '../services/seriesService';
 
 const GetSeries = async (limit, offset, searchValue) => {
@@ -26,10 +27,15 @@ const GetSeriesEvents = async (limit, offset, id) => {
   return await getSeriesEventsFromApi(limit, offset, id);
 };
 
+const GetSeriesStories = async (limit, offset, id) => {
+  return await getSeriesStoriesFromApi(limit, offset, id);
+};
+
 export {
   GetSeries,
   GetSeriesSingle,
   GetSeriesComics,
   GetSeriesCharacters,
   GetSeriesEvents,
+  GetSeriesStories,
 };

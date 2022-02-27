@@ -13,39 +13,39 @@ import {
   Spinner,
   Heading,
 } from 'native-base';
-import {GetCreator} from '../../api/controllers/creatorController';
+import {GetStory} from '../../api/controllers/storiesController';
 
-const CreatorDetails = ({route, navigation}) => {
-  const [creator, setCreator] = useState(null);
+const StoryDetails = ({route, navigation}) => {
+  const [story, setStory] = useState(null);
 
-  const getCreator = async () => {
-    var response = await GetCreator(route.params.loadFromId);
-    setCreator(response);
+  const getStory = async () => {
+    var response = await GetStory(route.params.loadFromId);
+    setStory(response);
   };
 
   useEffect(() => {
-    if (route.params.creator != null) {
-      setCreator(route.params.creator);
+    if (route.params.story != null) {
+      setStory(route.params.story);
     }
   }, []);
 
   useEffect(() => {
     if (route.params.load === true) {
-      getCreator();
+      getStory();
     }
   }, [route.params.load]);
 
   return (
-    <View flex={1} justifyContent={creator != null ? 'flex-start' : 'center'}>
-      {creator != null ? (
+    <View flex={1} justifyContent={story != null ? 'flex-start' : 'center'}>
+      {story != null ? (
         <Center flex={1}>
           <Text textAlign="center" m={1} bold={true} fontSize={20}>
-            {creator.name}
+            {story.title}
           </Text>
-          {creator.numOfComics !== 0 ||
-          creator.numOfSeries !== 0 ||
-          creator.numOfStories !== 0 ||
-          creator.numOfEvents !== 0 ? (
+          {story.charactersAvailable !== 0 ||
+          story.seriesAvailable !== 0 ||
+          story.comicsAvailable !== 0 ||
+          story.eventsAvailable !== 0 ? (
             <View w="90%">
               <Divider
                 mt={3}
@@ -54,7 +54,7 @@ const CreatorDetails = ({route, navigation}) => {
                 backgroundColor="red.800"
               />
               <HStack justifyContent="center" alignItems="center">
-                {creator.numOfComics !== 0 ? (
+                {story.comicsAvailable !== 0 ? (
                   <VStack mx={2}>
                     <IconButton
                       alignSelf="center"
@@ -67,9 +67,9 @@ const CreatorDetails = ({route, navigation}) => {
                         navigation.navigate('Root', {
                           screen: 'Comics',
                           params: {
-                            id: creator.id,
-                            name: creator.name,
-                            type: 'creators',
+                            id: story.id,
+                            name: story.title,
+                            type: 'stories',
                           },
                         })
                       }
@@ -87,7 +87,7 @@ const CreatorDetails = ({route, navigation}) => {
                     </Text>
                   </VStack>
                 ) : null}
-                {creator.numOfSeries !== null ? (
+                {story.seriesAvailable !== null ? (
                   <VStack mx={2}>
                     <IconButton
                       alignSelf="center"
@@ -100,9 +100,9 @@ const CreatorDetails = ({route, navigation}) => {
                         navigation.navigate('Root', {
                           screen: 'Series',
                           params: {
-                            id: creator.id,
-                            name: creator.name,
-                            type: 'creators',
+                            id: story.id,
+                            name: story.title,
+                            type: 'stories',
                           },
                         })
                       }
@@ -120,7 +120,7 @@ const CreatorDetails = ({route, navigation}) => {
                     </Text>
                   </VStack>
                 ) : null}
-                {creator.numOfEvents !== 0 ? (
+                {story.eventsAvailable !== 0 ? (
                   <VStack mx={2}>
                     <IconButton
                       alignSelf="center"
@@ -133,9 +133,9 @@ const CreatorDetails = ({route, navigation}) => {
                         navigation.navigate('Root', {
                           screen: 'Events',
                           params: {
-                            id: creator.id,
-                            name: creator.name,
-                            type: 'creators',
+                            id: story.id,
+                            name: story.title,
+                            type: 'stories',
                           },
                         })
                       }
@@ -153,7 +153,7 @@ const CreatorDetails = ({route, navigation}) => {
                     </Text>
                   </VStack>
                 ) : null}
-                {creator.numOfStories !== 0 ? (
+                {story.charactersAvailable !== 0 ? (
                   <VStack mx={2}>
                     <IconButton
                       alignSelf="center"
@@ -164,11 +164,11 @@ const CreatorDetails = ({route, navigation}) => {
                       size="lg"
                       onPress={() =>
                         navigation.navigate('Root', {
-                          screen: 'Stories',
+                          screen: 'Characters',
                           params: {
-                            id: creator.id,
-                            name: creator.name,
-                            type: 'creators',
+                            id: story.id,
+                            name: story.title,
+                            type: 'stories',
                           },
                         })
                       }
@@ -176,13 +176,13 @@ const CreatorDetails = ({route, navigation}) => {
                         <Icon
                           color="white"
                           as={MaterialIcons}
-                          name="library-books"
+                          name="person"
                           size="sm"
                         />
                       }
                     />
                     <Text textAlign="center" fontSize={14}>
-                      Stories
+                      Characters
                     </Text>
                   </VStack>
                 ) : null}
@@ -191,7 +191,7 @@ const CreatorDetails = ({route, navigation}) => {
                 <Text mb={-2} fontSize={11} bold={true}>
                   Hint:
                 </Text>{' '}
-                pressing the buttons above will bring up this creators specified
+                pressing the buttons above will bring up this stories specified
                 item/s.
               </Text>
               <Divider
@@ -202,16 +202,13 @@ const CreatorDetails = ({route, navigation}) => {
               />
             </View>
           ) : null}
+          <Text my={3}>{story.description}</Text>
         </Center>
       ) : (
         <Center>
-          <Spinner
-            accessibilityLabel="Loading creator"
-            color="red.800"
-            size="lg"
-          />
+          <Spinner accessibilityLabel="Loading" color="red.800" size="lg" />
           <Heading color="red.800" fontSize="lg">
-            Loading creator
+            Loading story
           </Heading>
         </Center>
       )}
@@ -219,4 +216,4 @@ const CreatorDetails = ({route, navigation}) => {
   );
 };
 
-export default CreatorDetails;
+export default StoryDetails;

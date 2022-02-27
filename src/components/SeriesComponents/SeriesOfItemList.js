@@ -17,6 +17,7 @@ import PureSeriesItemView from './PureSeriesItemView';
 import {GetCharactersSeries} from '../../api/controllers/charactersController';
 import {GetCreatorsSeries} from '../../api/controllers/creatorController';
 import {GetEventsSeries} from '../../api/controllers/eventController';
+import {GetStoriesSeries} from '../../api/controllers/storiesController';
 
 const SeriesOfItemList = ({
   handleSeriesInfoSheetOpen,
@@ -53,6 +54,14 @@ const SeriesOfItemList = ({
       }
       case 'events': {
         response = await GetEventsSeries(
+          99,
+          first ? 0 : offsetAndLoading.offsetNum,
+          itemInfo.id,
+        );
+        break;
+      }
+      case 'stories': {
+        response = await GetStoriesSeries(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
@@ -149,6 +158,14 @@ const SeriesOfItemList = ({
       case 'events': {
         navigation.navigate('Root', {screen: 'Events'});
         navigation.navigate('EventDetails', {
+          loadFromId: itemInfo.id,
+          load: true,
+        });
+        break;
+      }
+      case 'stories': {
+        navigation.navigate('Root', {screen: 'Stories'});
+        navigation.navigate('StoryDetails', {
           loadFromId: itemInfo.id,
           load: true,
         });

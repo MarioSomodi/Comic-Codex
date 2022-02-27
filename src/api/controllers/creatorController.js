@@ -4,6 +4,7 @@ import {
   getCreatorFromApi,
   getCreatorsSeriesFromApi,
   getCreatorsEventsFromApi,
+  getCreatorsStoriesFromApi,
 } from '../services/creatorService';
 
 const GetCreators = async (limit, offset, searchValue) => {
@@ -26,10 +27,15 @@ const GetCreatorsEvents = async (limit, offset, id) => {
   return await getCreatorsEventsFromApi(limit, offset, id);
 };
 
+const GetCreatorsStories = async (limit, offset, id) => {
+  return await getCreatorsStoriesFromApi(limit, offset, id);
+};
+
 export {
   GetCreators,
   GetCreatorsComics,
   GetCreator,
   GetCreatorsSeries,
   GetCreatorsEvents,
+  GetCreatorsStories,
 };

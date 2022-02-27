@@ -3,6 +3,7 @@ import Creator from '../../models/creator';
 import {marvelApi, getApiAuthString} from '../apiConfig';
 import {formatResultToCharacter} from '../services/charactersService';
 import {formatResultToEvent} from './eventService';
+import {formatResultToStory} from './storiesService';
 
 const formatResultToComic = result => {
   var textObj = result.textObjects.find(x => x.type === 'issue_solicit_text');
@@ -173,10 +174,40 @@ const getComicsEventsFromApi = async (limit, offset, id) => {
   return comicsEvents;
 };
 
+const getComicsStoriesFromApi = async (limit, offset, id) => {
+  var comicsStories = [];
+  if (limit === null) {
+    limit = 99;
+  }
+  var paramsObj = {
+    limit: limit,
+    orderBy: '-modified',
+    offset: offset,
+  };
+  var authString = await getApiAuthString();
+  var response = null;
+  try {
+    response = await marvelApi.get('comics/' + id + '/stories' + authString, {
+      params: paramsObj,
+    });
+    if (response.data.data.count === 0) {
+      comicsStories.push('false');
+      return comicsStories;
+    }
+    response.data.data.results.forEach(result => {
+      comicsStories.push(formatResultToStory(result));
+    });
+  } catch (error) {
+    console.log({response: response, exception: error});
+  }
+  return comicsStories;
+};
+
 export {
   getComicsFromApi,
   formatResultToComic,
   getComicsCharactersFromApi,
   getComicFromApi,
   getComicsEventsFromApi,
+  getComicsStoriesFromApi,
 };

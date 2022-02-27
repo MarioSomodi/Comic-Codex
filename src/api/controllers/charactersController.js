@@ -4,6 +4,7 @@ import {
   getCharacterFromApi,
   getCharactersSeriesFromApi,
   getCharactersEventsFromApi,
+  getCharactersStoriesFromApi,
 } from '../services/charactersService';
 
 const GetCharacters = async (limit, offset, searchValue) => {
@@ -26,10 +27,15 @@ const GetCharactersEvents = async (limit, offset, id) => {
   return await getCharactersEventsFromApi(limit, offset, id);
 };
 
+const GetCharacterStories = async (limit, offset, id) => {
+  return await getCharactersStoriesFromApi(limit, offset, id);
+};
+
 export {
   GetCharacters,
   GetCharactersComics,
   GetCharacter,
   GetCharactersSeries,
   GetCharactersEvents,
+  GetCharacterStories,
 };

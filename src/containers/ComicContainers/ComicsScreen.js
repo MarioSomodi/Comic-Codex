@@ -23,7 +23,7 @@ const ComicsScreen = ({navigation}) => {
   const snapPoints = useMemo(() => ['0%', '43%'], []);
 
   const handleComicInfoSheetClose = () => {
-    bottomSheetRef.current.close();
+    bottomSheetRef.current.collapse();
   };
 
   const handleComicInfoSheetOpen = comic => {
@@ -38,7 +38,7 @@ const ComicsScreen = ({navigation}) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      return () => bottomSheetRef.current.close();
+      return () => bottomSheetRef.current.collapse();
     }, []),
   );
 
@@ -49,6 +49,7 @@ const ComicsScreen = ({navigation}) => {
       switch (route.params.type) {
         case 'creators':
         case 'series':
+        case 'stories':
         case 'events':
         case 'characters': {
           setItemInfo({

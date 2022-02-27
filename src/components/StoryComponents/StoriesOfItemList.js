@@ -13,20 +13,15 @@ import {
 } from 'native-base';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {isPortrait} from '../../utilites/screenOrientation';
-import PureComicItemView from './PureComicItemView';
-import {GetCharactersComics} from '../../api/controllers/charactersController';
-import {GetCreatorsComics} from '../../api/controllers/creatorController';
-import {GetSeriesComics} from '../../api/controllers/seriesController';
-import {GetEventsComics} from '../../api/controllers/eventController';
-import {GetStoriesComics} from '../../api/controllers/storiesController';
+import PureStoryItemView from './PureStoryItemView';
+import {GetCharacterStories} from '../../api/controllers/charactersController';
+import {GetCreatorsStories} from '../../api/controllers/creatorController';
+import {GetEventsStories} from '../../api/controllers/eventController';
+import {GetSeriesStories} from '../../api/controllers/seriesController';
+import {GetComicsStories} from '../../api/controllers/comicsController';
 
-const ComicsOfItemList = ({
-  handleComicInfoSheetOpen,
-  itemInfo,
-  setItemComicsView,
-  navigation,
-}) => {
-  const [itemComics, setItemComics] = useState([]);
+const StoriesOfItemList = ({itemInfo, setItemStoriesView, navigation}) => {
+  const [itemStories, setItemStories] = useState([]);
   const [screenOrientation, setScreenOrientation] = useState(null);
   const [endOfResults, setEndOfResults] = useState(true);
   const [offsetAndLoading, setOffsetAndLoad] = useState({
@@ -34,11 +29,11 @@ const ComicsOfItemList = ({
     loading: false,
   });
 
-  const fetchItemComics = async first => {
+  const fetchItemStories = async first => {
     var response;
     switch (itemInfo.type) {
       case 'characters': {
-        response = await GetCharactersComics(
+        response = await GetCharacterStories(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
@@ -46,15 +41,7 @@ const ComicsOfItemList = ({
         break;
       }
       case 'creators': {
-        response = await GetCreatorsComics(
-          99,
-          first ? 0 : offsetAndLoading.offsetNum,
-          itemInfo.id,
-        );
-        break;
-      }
-      case 'series': {
-        response = await GetSeriesComics(
+        response = await GetCreatorsStories(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
@@ -62,15 +49,23 @@ const ComicsOfItemList = ({
         break;
       }
       case 'events': {
-        response = await GetEventsComics(
+        response = await GetEventsStories(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
         );
         break;
       }
-      case 'stories': {
-        response = await GetStoriesComics(
+      case 'series': {
+        response = await GetSeriesStories(
+          99,
+          first ? 0 : offsetAndLoading.offsetNum,
+          itemInfo.id,
+        );
+        break;
+      }
+      case 'comics': {
+        response = await GetComicsStories(
           99,
           first ? 0 : offsetAndLoading.offsetNum,
           itemInfo.id,
@@ -89,8 +84,8 @@ const ComicsOfItemList = ({
       } else {
         setEndOfResults(false);
       }
-      setItemComics(prevItemComics =>
-        first ? response : [...prevItemComics, ...response],
+      setItemStories(prevItemStories =>
+        first ? response : [...prevItemStories, ...response],
       );
     }
   };
@@ -109,12 +104,7 @@ const ComicsOfItemList = ({
   );
 
   const renderItem = useCallback(({item}) => {
-    return (
-      <PureComicItemView
-        handleComicInfoSheetOpen={handleComicInfoSheetOpen}
-        item={item}
-      />
-    );
+    return <PureStoryItemView navigation={navigation} item={item} />;
   }, []);
 
   const renderFooterChar = () => {
@@ -137,7 +127,7 @@ const ComicsOfItemList = ({
     );
   };
 
-  const handleLoadMoreItemComics = () => {
+  const handleLoadMoreItemStories = () => {
     setOffsetAndLoad(prevObj => {
       return {offsetNum: prevObj.offsetNum + 99, loading: true};
     });
@@ -146,7 +136,7 @@ const ComicsOfItemList = ({
   const keyExtractor = useCallback(item => item.id, []);
 
   const goBackToItemsScreen = () => {
-    setItemComicsView(false);
+    setItemStoriesView(false);
     switch (itemInfo.type) {
       case 'characters': {
         navigation.navigate('Root', {screen: 'Characters'});
@@ -164,14 +154,6 @@ const ComicsOfItemList = ({
         });
         break;
       }
-      case 'series': {
-        navigation.navigate('Root', {screen: 'Series'});
-        navigation.navigate('SeriesDetails', {
-          loadFromId: itemInfo.id,
-          load: true,
-        });
-        break;
-      }
       case 'events': {
         navigation.navigate('Root', {screen: 'Events'});
         navigation.navigate('EventDetails', {
@@ -180,9 +162,17 @@ const ComicsOfItemList = ({
         });
         break;
       }
-      case 'stories': {
-        navigation.navigate('Root', {screen: 'Stories'});
-        navigation.navigate('StoryDetails', {
+      case 'series': {
+        navigation.navigate('Root', {screen: 'Series'});
+        navigation.navigate('SeriesDetails', {
+          loadFromId: itemInfo.id,
+          load: true,
+        });
+        break;
+      }
+      case 'comics': {
+        navigation.navigate('Root', {screen: 'Comics'});
+        navigation.navigate('ComicDetails', {
           loadFromId: itemInfo.id,
           load: true,
         });
@@ -200,29 +190,29 @@ const ComicsOfItemList = ({
 
   useEffect(() => {
     if (itemInfo !== null) {
-      setItemComics([]);
+      setItemStories([]);
       setOffsetAndLoad({
         offsetNum: 0,
         loading: true,
       });
       setEndOfResults(false);
-      fetchItemComics(true);
+      fetchItemStories(true);
     }
   }, [itemInfo]);
 
   useEffect(() => {
     if (!endOfResults && offsetAndLoading.offsetNum !== 0) {
-      fetchItemComics(false);
+      fetchItemStories(false);
     }
   }, [offsetAndLoading.offsetNum]);
 
   return (
     <View flex={1}>
-      {itemComics.length > 0 && itemComics[0] !== 'false' ? (
+      {itemStories.length > 0 && itemStories[0] !== 'false' ? (
         <View flex={1}>
           <HStack alignItems="center" justifyContent="space-between">
             <Text m={1} flex={1} fontSize={17}>
-              Comics of{' '}
+              Stories of{' '}
               {itemInfo.type !== 'series'
                 ? itemInfo.type.substring(0, itemInfo.type.length - 1)
                 : itemInfo.type}
@@ -251,13 +241,12 @@ const ComicsOfItemList = ({
           </HStack>
           <FlatList
             getItemLayout={getItemLayout}
-            onEndReached={handleLoadMoreItemComics}
+            onEndReached={handleLoadMoreItemStories}
             onEndReachedThreshold={0.5}
             m={1}
-            data={itemComics}
+            data={itemStories}
             ListFooterComponent={renderFooterChar}
             renderItem={renderItem}
-            numColumns={screenOrientation === 'landscape' ? 6 : 3}
             keyExtractor={keyExtractor}
             key={screenOrientation === 'landscape' ? 1 : 2}
           />
@@ -266,12 +255,12 @@ const ComicsOfItemList = ({
         <Center flex={1}>
           <View>
             <Spinner
-              accessibilityLabel="Loading comics"
+              accessibilityLabel="Loading series"
               color="red.800"
               size="lg"
             />
             <Heading color="red.800" fontSize="lg">
-              Loading {itemInfo.type} comics
+              Loading {itemInfo.type} stories
             </Heading>
           </View>
         </Center>
@@ -280,4 +269,4 @@ const ComicsOfItemList = ({
   );
 };
 
-export default ComicsOfItemList;
+export default StoriesOfItemList;

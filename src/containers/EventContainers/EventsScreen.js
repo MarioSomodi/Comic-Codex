@@ -25,7 +25,7 @@ const EventsScreen = ({navigation}) => {
   const snapPoints = useMemo(() => ['0%', '43%'], []);
 
   const handleEventInfoSheetClose = () => {
-    bottomSheetRef.current.close();
+    bottomSheetRef.current.collapse();
   };
 
   const handleEventInfoSheetOpen = event => {
@@ -42,7 +42,7 @@ const EventsScreen = ({navigation}) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      return () => bottomSheetRef.current.close();
+      return () => bottomSheetRef.current.collapse();
     }, []),
   );
 
@@ -51,6 +51,7 @@ const EventsScreen = ({navigation}) => {
       switch (route.params.type) {
         case 'characters':
         case 'series':
+        case 'stories':
         case 'comics':
         case 'creators': {
           setItemInfo({

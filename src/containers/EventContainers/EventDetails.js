@@ -235,12 +235,16 @@ const EventDetails = ({route, navigation}) => {
                       backgroundColor="red.800"
                       borderRadius="full"
                       size="lg"
-                      // onPress={() =>
-                      //   navigation.navigate('Root', {
-                      //     screen: 'Characters',
-                      //     params: {id: comic.id, title: comic.title},
-                      //   })
-                      // }
+                      onPress={() =>
+                        navigation.navigate('Root', {
+                          screen: 'Stories',
+                          params: {
+                            id: event.id,
+                            name: event.title,
+                            type: 'events',
+                          },
+                        })
+                      }
                       icon={
                         <Icon
                           color="white"
@@ -304,7 +308,7 @@ const EventDetails = ({route, navigation}) => {
             size="lg"
           />
           <Heading color="red.800" fontSize="lg">
-            Loading events
+            Loading event
           </Heading>
         </Center>
       )}

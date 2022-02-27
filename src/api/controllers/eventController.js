@@ -4,6 +4,7 @@ import {
   getEventsCharactersFromApi,
   getEventsComicsFromApi,
   getEventsSeriesFromApi,
+  getEventsStoriesFromApi,
 } from '../services/eventService';
 
 const GetEvents = async (limit, offset, searchValue) => {
@@ -26,10 +27,15 @@ const GetEventsSeries = async (limit, offset, id) => {
   return await getEventsSeriesFromApi(limit, offset, id);
 };
 
+const GetEventsStories = async (limit, offset, id) => {
+  return await getEventsStoriesFromApi(limit, offset, id);
+};
+
 export {
   GetEvents,
   GetEvent,
   GetEventsCharacters,
   GetEventsComics,
   GetEventsSeries,
+  GetEventsStories,
 };
