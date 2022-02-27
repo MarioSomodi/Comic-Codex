@@ -11,6 +11,7 @@ import CreatorsScreen from '../containers/CreatorContainers/CreatorsScreen';
 import SeriesScreen from '../containers/SeriesContainers/SeriesScreen';
 import EventsScreen from '../containers/EventContainers/EventsScreen';
 import StoriesScreen from '../containers/StoryContainers/StoriesScreen';
+import FavoritesScreen from '../containers/FavoritesContainers/FavoritesScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -28,6 +29,8 @@ const getIcon = screenName => {
       return 'event';
     case 'Stories':
       return 'library-books';
+    case 'Favorites':
+      return 'star';
     default:
       return undefined;
   }
@@ -112,6 +115,9 @@ const MyDrawer = ({user}) => {
         </Drawer.Screen>
         <Drawer.Screen name="Stories">
           {props => <StoriesScreen {...props} user={user} />}
+        </Drawer.Screen>
+        <Drawer.Screen name="Favorites">
+          {props => <FavoritesScreen {...props} user={user} />}
         </Drawer.Screen>
       </Drawer.Navigator>
     </Box>

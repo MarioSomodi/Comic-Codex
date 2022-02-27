@@ -32,8 +32,10 @@ class PureCreatorItemView extends React.PureComponent {
               <Text bold={true} fontSize={16}>
                 {item.name}
               </Text>
-              {item.role !== null ? (
-                <Text fontSize={13}>{item.role}</Text>
+              {item.role !== null && item.role !== undefined ? (
+                <Text fontSize={13}>
+                  {item.role} {console.log(item.role)}
+                </Text>
               ) : null}
             </VStack>
             <Icon
