@@ -14,20 +14,59 @@ import {
   Center,
   Spinner,
   Heading,
+  Button,
 } from 'native-base';
+import {firebase} from '@react-native-firebase/database';
 import placeholderImage from '../../assets/images/Placeholder.png';
 import PureCreatorItemView from '../../components/CreatorComponents/PureCreatorItemView';
 import {GetEvent} from '../../api/controllers/eventController';
 
-const EventDetails = ({route, navigation}) => {
+const EventDetails = ({route, navigation, user}) => {
   const [event, setEvent] = useState(null);
+  const [favoriteEvents, setFavoriteEvents] = useState(null);
 
   const getEvent = async () => {
     var response = await GetEvent(route.params.loadFromId);
     setEvent(response);
   };
 
+  const database = firebase
+    .app()
+    .database(
+      'https://comic-codex-default-rtdb.europe-west1.firebasedatabase.app/',
+    );
+
+  const addEventToFavorites = async () => {
+    database
+      .ref('/events/' + user.uid)
+      .once('value')
+      .then(value => {
+        if (value === null) {
+          database.ref('/events/' + user.uid + '/' + event.id).set(event);
+        } else {
+          database.ref('/events/' + user.uid + '/' + event.id).set(event);
+        }
+      });
+  };
+
+  const removeEventFromFavorites = async () => {
+    database.ref('/events/' + user.uid + '/' + event.id).remove();
+  };
+
   useEffect(() => {
+    database.ref('/events/' + user.uid).on('value', snapshot => {
+      var favoriteEventsDB = snapshot.val();
+      if (favoriteEventsDB !== null) {
+        favoriteEventsDB = Object.values(favoriteEventsDB);
+        var fEvents = [];
+        favoriteEventsDB.forEach(usersFavoriteEvent => {
+          fEvents.push(usersFavoriteEvent);
+        });
+        setFavoriteEvents(fEvents);
+      } else {
+        setFavoriteEvents([]);
+      }
+    });
     if (route.params.event != null) {
       setEvent(route.params.event);
     }
@@ -114,7 +153,53 @@ const EventDetails = ({route, navigation}) => {
           <Text m={1} mt={3} fontSize={15}>
             {event.description}
           </Text>
-
+          {favoriteEvents &&
+          favoriteEvents.some(favoritEvent => {
+            if (favoritEvent.id === event.id) {
+              return true;
+            } else {
+              return false;
+            }
+          }) ? (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="100%"
+              onPress={removeEventFromFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Remove from favorites
+                </Text>
+                <Icon color="white" as={MaterialIcons} name="star" size="sm" />
+              </HStack>
+            </Button>
+          ) : (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="100%"
+              onPress={addEventToFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Add to favorites
+                </Text>
+                <Icon
+                  color="white"
+                  as={MaterialIcons}
+                  name="star-outline"
+                  size="sm"
+                />
+              </HStack>
+            </Button>
+          )}
           {event.charactersAvailable !== 0 ||
           event.storiesAvailable !== 0 ||
           event.comicsAvailable !== 0 ||

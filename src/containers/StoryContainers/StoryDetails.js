@@ -12,18 +12,57 @@ import {
   Center,
   Spinner,
   Heading,
+  Button,
 } from 'native-base';
+import {firebase} from '@react-native-firebase/database';
 import {GetStory} from '../../api/controllers/storiesController';
 
-const StoryDetails = ({route, navigation}) => {
+const StoryDetails = ({route, navigation, user}) => {
   const [story, setStory] = useState(null);
+  const [favoriteStories, setFavoriteStories] = useState(null);
 
   const getStory = async () => {
     var response = await GetStory(route.params.loadFromId);
     setStory(response);
   };
 
+  const database = firebase
+    .app()
+    .database(
+      'https://comic-codex-default-rtdb.europe-west1.firebasedatabase.app/',
+    );
+
+  const addStoryToFavorites = async () => {
+    database
+      .ref('/stories/' + user.uid)
+      .once('value')
+      .then(value => {
+        if (value === null) {
+          database.ref('/stories/' + user.uid + '/' + story.id).set(story);
+        } else {
+          database.ref('/stories/' + user.uid + '/' + story.id).set(story);
+        }
+      });
+  };
+
+  const removeStoryFromFavorites = async () => {
+    database.ref('/stories/' + user.uid + '/' + story.id).remove();
+  };
+
   useEffect(() => {
+    database.ref('/stories/' + user.uid).on('value', snapshot => {
+      var favoriteStoriesDB = snapshot.val();
+      if (favoriteStoriesDB !== null) {
+        favoriteStoriesDB = Object.values(favoriteStoriesDB);
+        var fStories = [];
+        favoriteStoriesDB.forEach(usersFavoriteStory => {
+          fStories.push(usersFavoriteStory);
+        });
+        setFavoriteStories(fStories);
+      } else {
+        setFavoriteStories([]);
+      }
+    });
     if (route.params.story != null) {
       setStory(route.params.story);
     }
@@ -203,6 +242,53 @@ const StoryDetails = ({route, navigation}) => {
             </View>
           ) : null}
           <Text my={3}>{story.description}</Text>
+          {favoriteStories &&
+          favoriteStories.some(favoriteStory => {
+            if (favoriteStory.id === story.id) {
+              return true;
+            } else {
+              return false;
+            }
+          }) ? (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="90%"
+              onPress={removeStoryFromFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Remove from favorites
+                </Text>
+                <Icon color="white" as={MaterialIcons} name="star" size="sm" />
+              </HStack>
+            </Button>
+          ) : (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="90%"
+              onPress={addStoryToFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Add to favorites
+                </Text>
+                <Icon
+                  color="white"
+                  as={MaterialIcons}
+                  name="star-outline"
+                  size="sm"
+                />
+              </HStack>
+            </Button>
+          )}
         </Center>
       ) : (
         <Center>

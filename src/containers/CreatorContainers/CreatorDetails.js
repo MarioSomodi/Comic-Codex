@@ -12,18 +12,57 @@ import {
   Center,
   Spinner,
   Heading,
+  Button,
 } from 'native-base';
+import {firebase} from '@react-native-firebase/database';
 import {GetCreator} from '../../api/controllers/creatorController';
 
-const CreatorDetails = ({route, navigation}) => {
+const CreatorDetails = ({route, navigation, user}) => {
   const [creator, setCreator] = useState(null);
+  const [favoriteCreators, setFavoriteCreators] = useState(null);
 
   const getCreator = async () => {
     var response = await GetCreator(route.params.loadFromId);
     setCreator(response);
   };
 
+  const database = firebase
+    .app()
+    .database(
+      'https://comic-codex-default-rtdb.europe-west1.firebasedatabase.app/',
+    );
+
+  const addCreatorToFavorites = async () => {
+    database
+      .ref('/creators/' + user.uid)
+      .once('value')
+      .then(value => {
+        if (value === null) {
+          database.ref('/creators/' + user.uid + '/' + creator.id).set(creator);
+        } else {
+          database.ref('/creators/' + user.uid + '/' + creator.id).set(creator);
+        }
+      });
+  };
+
+  const removeCreatorFromFavorites = async () => {
+    database.ref('/creators/' + user.uid + '/' + creator.id).remove();
+  };
+
   useEffect(() => {
+    database.ref('/creators/' + user.uid).on('value', snapshot => {
+      var favoriteCreatorsDB = snapshot.val();
+      if (favoriteCreatorsDB !== null) {
+        favoriteCreatorsDB = Object.values(favoriteCreatorsDB);
+        var fCreators = [];
+        favoriteCreatorsDB.forEach(usersFavoriteCreator => {
+          fCreators.push(usersFavoriteCreator);
+        });
+        setFavoriteCreators(fCreators);
+      } else {
+        setFavoriteCreators([]);
+      }
+    });
     if (route.params.creator != null) {
       setCreator(route.params.creator);
     }
@@ -202,6 +241,53 @@ const CreatorDetails = ({route, navigation}) => {
               />
             </View>
           ) : null}
+          {favoriteCreators &&
+          favoriteCreators.some(favoritCreator => {
+            if (favoritCreator.id === creator.id) {
+              return true;
+            } else {
+              return false;
+            }
+          }) ? (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="90%"
+              onPress={removeCreatorFromFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Remove from favorites
+                </Text>
+                <Icon color="white" as={MaterialIcons} name="star" size="sm" />
+              </HStack>
+            </Button>
+          ) : (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="90%"
+              onPress={addCreatorToFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Add to favorites
+                </Text>
+                <Icon
+                  color="white"
+                  as={MaterialIcons}
+                  name="star-outline"
+                  size="sm"
+                />
+              </HStack>
+            </Button>
+          )}
         </Center>
       ) : (
         <Center>

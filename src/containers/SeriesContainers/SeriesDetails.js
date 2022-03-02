@@ -14,20 +14,63 @@ import {
   Center,
   Spinner,
   Heading,
+  Button,
 } from 'native-base';
+import {firebase} from '@react-native-firebase/database';
 import placeholderImage from '../../assets/images/Placeholder.png';
 import PureCreatorItemView from '../../components/CreatorComponents/PureCreatorItemView';
 import {GetSeriesSingle} from '../../api/controllers/seriesController';
 
-const ComicDetails = ({route, navigation}) => {
+const ComicDetails = ({route, navigation, user}) => {
   const [seriesSingle, setSeriesSingle] = useState(null);
+  const [favoriteSeries, setFavoriteSeries] = useState(null);
 
   const getSingleSeries = async () => {
     var response = await GetSeriesSingle(route.params.loadFromId);
     setSeriesSingle(response);
   };
 
+  const database = firebase
+    .app()
+    .database(
+      'https://comic-codex-default-rtdb.europe-west1.firebasedatabase.app/',
+    );
+
+  const addSeriesToFavorites = async () => {
+    database
+      .ref('/series/' + user.uid)
+      .once('value')
+      .then(value => {
+        if (value === null) {
+          database
+            .ref('/series/' + user.uid + '/' + seriesSingle.id)
+            .set(seriesSingle);
+        } else {
+          database
+            .ref('/series/' + user.uid + '/' + seriesSingle.id)
+            .set(seriesSingle);
+        }
+      });
+  };
+
+  const removeSeriesFromFavorites = async () => {
+    database.ref('/series/' + user.uid + '/' + seriesSingle.id).remove();
+  };
+
   useEffect(() => {
+    database.ref('/series/' + user.uid).on('value', snapshot => {
+      var favoriteSeriesDB = snapshot.val();
+      if (favoriteSeriesDB !== null) {
+        favoriteSeriesDB = Object.values(favoriteSeriesDB);
+        var fSeries = [];
+        favoriteSeriesDB.forEach(usersFavoriteSeries => {
+          fSeries.push(usersFavoriteSeries);
+        });
+        setFavoriteSeries(fSeries);
+      } else {
+        setFavoriteSeries([]);
+      }
+    });
     if (route.params.seriesSingle != null) {
       setSeriesSingle(route.params.seriesSingle);
     }
@@ -144,7 +187,53 @@ const ComicDetails = ({route, navigation}) => {
           <Text m={1} mt={3} fontSize={15}>
             {seriesSingle.description}
           </Text>
-
+          {favoriteSeries &&
+          favoriteSeries.some(favoritSeriesSingle => {
+            if (favoritSeriesSingle.id === seriesSingle.id) {
+              return true;
+            } else {
+              return false;
+            }
+          }) ? (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="100%"
+              onPress={removeSeriesFromFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Remove from favorites
+                </Text>
+                <Icon color="white" as={MaterialIcons} name="star" size="sm" />
+              </HStack>
+            </Button>
+          ) : (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="100%"
+              onPress={addSeriesToFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Add to favorites
+                </Text>
+                <Icon
+                  color="white"
+                  as={MaterialIcons}
+                  name="star-outline"
+                  size="sm"
+                />
+              </HStack>
+            </Button>
+          )}
           {seriesSingle.charactersAvailable !== 0 ||
           seriesSingle.storiesAvailable !== 0 ||
           seriesSingle.comicsAvailable !== 0 ||

@@ -14,19 +14,62 @@ import {
   Center,
   Spinner,
   Heading,
+  Button,
 } from 'native-base';
+import {firebase} from '@react-native-firebase/database';
 import placeholderImage from '../../assets/images/Placeholder.png';
 import {GetCharacter} from '../../api/controllers/charactersController';
 
-const CharacterDetails = ({navigation, route}) => {
+const CharacterDetails = ({navigation, route, user}) => {
   const [character, setCharacter] = useState(null);
+  const [favoriteCharacters, setFavoriteCharacters] = useState(null);
 
   const getCharacter = async () => {
     var response = await GetCharacter(route.params.loadFromId);
     setCharacter(response);
   };
 
+  const database = firebase
+    .app()
+    .database(
+      'https://comic-codex-default-rtdb.europe-west1.firebasedatabase.app/',
+    );
+
+  const addCharacterToFavorites = async () => {
+    database
+      .ref('/characters/' + user.uid)
+      .once('value')
+      .then(value => {
+        if (value === null) {
+          database
+            .ref('/characters/' + user.uid + '/' + character.id)
+            .set(character);
+        } else {
+          database
+            .ref('/characters/' + user.uid + '/' + character.id)
+            .set(character);
+        }
+      });
+  };
+
+  const removeCharacterFromFavorites = async () => {
+    database.ref('/characters/' + user.uid + '/' + character.id).remove();
+  };
+
   useEffect(() => {
+    database.ref('/characters/' + user.uid).on('value', snapshot => {
+      var favoriteCharactersDB = snapshot.val();
+      if (favoriteCharactersDB !== null) {
+        favoriteCharactersDB = Object.values(favoriteCharactersDB);
+        var fCharacters = [];
+        favoriteCharactersDB.forEach(usersFavoriteCharacter => {
+          fCharacters.push(usersFavoriteCharacter);
+        });
+        setFavoriteCharacters(fCharacters);
+      } else {
+        setFavoriteCharacters([]);
+      }
+    });
     if (route.params.character != null) {
       setCharacter(route.params.character);
     }
@@ -144,6 +187,53 @@ const CharacterDetails = ({navigation, route}) => {
           <Text m={1} mt={3} fontSize={15}>
             {character.description}
           </Text>
+          {favoriteCharacters &&
+          favoriteCharacters.some(favoriteCharacter => {
+            if (favoriteCharacter.id === character.id) {
+              return true;
+            } else {
+              return false;
+            }
+          }) ? (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="100%"
+              onPress={removeCharacterFromFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Remove from favorites
+                </Text>
+                <Icon color="white" as={MaterialIcons} name="star" size="sm" />
+              </HStack>
+            </Button>
+          ) : (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="100%"
+              onPress={addCharacterToFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Add to favorites
+                </Text>
+                <Icon
+                  color="white"
+                  as={MaterialIcons}
+                  name="star-outline"
+                  size="sm"
+                />
+              </HStack>
+            </Button>
+          )}
           {character.numOfComics !== 0 ||
           character.numOfEvents !== 0 ||
           character.numOfStories !== 0 ||

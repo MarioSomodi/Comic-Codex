@@ -14,20 +14,59 @@ import {
   Center,
   Spinner,
   Heading,
+  Button,
 } from 'native-base';
+import {firebase} from '@react-native-firebase/database';
 import placeholderImage from '../../assets/images/Placeholder.png';
 import PureCreatorItemView from '../../components/CreatorComponents/PureCreatorItemView';
 import {GetComic} from '../../api/controllers/comicsController';
 
-const ComicDetails = ({route, navigation}) => {
+const ComicDetails = ({route, navigation, user}) => {
   const [comic, setComic] = useState(null);
+  const [favoriteComics, setFavoriteComics] = useState(null);
+
+  const database = firebase
+    .app()
+    .database(
+      'https://comic-codex-default-rtdb.europe-west1.firebasedatabase.app/',
+    );
 
   const getComic = async () => {
     var response = await GetComic(route.params.loadFromId);
     setComic(response);
   };
 
+  const addComicToFavorites = async () => {
+    database
+      .ref('/comics/' + user.uid)
+      .once('value')
+      .then(value => {
+        if (value === null) {
+          database.ref('/comics/' + user.uid + '/' + comic.id).set(comic);
+        } else {
+          database.ref('/comics/' + user.uid + '/' + comic.id).set(comic);
+        }
+      });
+  };
+
+  const removeComicFromFavorites = async () => {
+    database.ref('/comics/' + user.uid + '/' + comic.id).remove();
+  };
+
   useEffect(() => {
+    database.ref('/comics/' + user.uid).on('value', snapshot => {
+      var favoriteComicsDB = snapshot.val();
+      if (favoriteComicsDB !== null) {
+        favoriteComicsDB = Object.values(favoriteComicsDB);
+        var fComics = [];
+        favoriteComicsDB.forEach(usersFavoriteComic => {
+          fComics.push(usersFavoriteComic);
+        });
+        setFavoriteComics(fComics);
+      } else {
+        setFavoriteComics([]);
+      }
+    });
     if (route.params.comic != null) {
       setComic(route.params.comic);
     }
@@ -155,11 +194,56 @@ const ComicDetails = ({route, navigation}) => {
               ) : null}
             </VStack>
           </HStack>
-
           <Text m={1} mt={3} fontSize={15}>
             {comic.description}
           </Text>
-
+          {favoriteComics &&
+          favoriteComics.some(favoritComic => {
+            if (favoritComic.id === comic.id) {
+              return true;
+            } else {
+              return false;
+            }
+          }) ? (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="100%"
+              onPress={removeComicFromFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Remove from favorites
+                </Text>
+                <Icon color="white" as={MaterialIcons} name="star" size="sm" />
+              </HStack>
+            </Button>
+          ) : (
+            <Button
+              alignSelf="center"
+              my={2}
+              w="100%"
+              onPress={addComicToFavorites}
+              variant="solid"
+              backgroundColor="red.800"
+              borderRadius="full"
+              size="lg">
+              <HStack alignItems="center">
+                <Text color="white" mr={2}>
+                  Add to favorites
+                </Text>
+                <Icon
+                  color="white"
+                  as={MaterialIcons}
+                  name="star-outline"
+                  size="sm"
+                />
+              </HStack>
+            </Button>
+          )}
           {comic.numOfCharacters !== 0 ||
           comic.numOfEvents !== 0 ||
           comic.numOfStories !== 0 ||

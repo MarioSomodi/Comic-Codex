@@ -23,19 +23,15 @@ const FavoriteStories = ({navigation, user}) => {
         .database(
           'https://comic-codex-default-rtdb.europe-west1.firebasedatabase.app/',
         );
-      var DB = await database.ref('/stories').on('value', snapshot => {
+      database.ref('/stories/' + user.uid).on('value', snapshot => {
         var favoriteStoriesDB = snapshot.val();
-        favoriteStoriesDB.shift();
-        if (favoriteStoriesDB !== undefined && favoriteStoriesDB.length > 0) {
-          favoriteStoriesDB.forEach(usersFavoriteStories => {
-            if (usersFavoriteStories.userUID === user.uid) {
-              var fStories = [];
-              usersFavoriteStories.favoriteStories.forEach(favoriteStory => {
-                fStories.push(favoriteStory);
-              });
-              setFavoriteStories(fStories);
-            }
+        if (favoriteStoriesDB !== null) {
+          favoriteStoriesDB = Object.values(favoriteStoriesDB);
+          var fStories = [];
+          favoriteStoriesDB.forEach(usersFavoriteStory => {
+            fStories.push(usersFavoriteStory);
           });
+          setFavoriteStories(fStories);
         } else {
           setFavoriteStories([]);
         }
